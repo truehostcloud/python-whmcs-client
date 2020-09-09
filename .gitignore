@@ -1,1 +1,4 @@
 venv/
+olittwhmcs/__pycache/
+tests/__pycache__/
+build/
