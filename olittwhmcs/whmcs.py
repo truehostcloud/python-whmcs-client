@@ -17,5 +17,4 @@ def get_products(group_id=None, module=None, product_ids=None):
     url = "https://www.olitt.com/billing/includes/api.php"
     parameters = request_parameters.get_product_request_parameters(group_id, module, product_ids)
     is_successful, products_response = api.get_whmcs_response(url, parameters)
-    print(products_response)
     return products_response
