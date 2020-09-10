@@ -1,1 +1,6 @@
-venv/
+.idea
+venv
+build/
+.pytest_cache
+tests/__pycache__
+olittwhmcs/__pycache__
