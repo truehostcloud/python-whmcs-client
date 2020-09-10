@@ -1,6 +1,7 @@
 .idea
 venv
-build/
+build
+dist
 .pytest_cache
 tests/__pycache__
 olittwhmcs/__pycache__
