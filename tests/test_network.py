@@ -1,7 +1,7 @@
 import pytest
 import requests
 import responses
-from olittwhmcs import api
+from olittwhmcs import network
 from olittwhmcs.exceptions import WhmcsConnectionError
 
 """
@@ -16,11 +16,11 @@ def test_whmcs_response_is_returned_correctly():
     responses.add(responses.POST, 'https://www.example.com/api', json={'error': 'not found'}, status=404)
     responses.add(responses.POST, 'https://www.example.com/api/create', json={'id': 1}, status=200)
 
-    whmcs_response = api.make_whmcs_network_request('https://www.example.com/api', {})
+    whmcs_response = network.make_whmcs_network_request('https://www.example.com/api', {})
     assert whmcs_response == responses.calls[0].response
     assert whmcs_response.status_code == 404
 
-    whmcs_response = api.make_whmcs_network_request('https://www.example.com/api/create', {})
+    whmcs_response = network.make_whmcs_network_request('https://www.example.com/api/create', {})
     assert whmcs_response == responses.calls[1].response
     assert whmcs_response.status_code == 200
 
@@ -31,7 +31,7 @@ def test_whmcs_response_is_return_a_whmcs_connection_error_when_an_invalid_url_i
     responses.add(responses.POST, 'https://www.example.com/api', json=expected_response, status=404)
 
     with pytest.raises(WhmcsConnectionError):
-        api.make_whmcs_network_request('https://www.idontexist.com/api', {})
+        network.make_whmcs_network_request('https://www.idontexist.com/api', {})
 
 
 """
@@ -48,11 +48,11 @@ def test_get_response_data_with_a_valid_json_body():
     expected_response = {'error': 'not found'}
     responses.add(responses.POST, url, json=expected_response, status=404)
     response = requests.post(url)
-    assert type(api.get_response_data(response)) == dict
-    assert api.get_response_data(response) == expected_response
-    assert api.get_response_data(response) is not None
-    assert api.get_response_data(response) != {}
-    assert api.get_response_data(response) != ""
+    assert type(network.get_response_data(response)) == dict
+    assert network.get_response_data(response) == expected_response
+    assert network.get_response_data(response) is not None
+    assert network.get_response_data(response) != {}
+    assert network.get_response_data(response) != ""
 
 
 @responses.activate
@@ -61,10 +61,10 @@ def test_get_response_data_with_a_invalid_json_body():
     expected_response = "some html response"
     responses.add(responses.POST, url, json=expected_response, status=404)
     response = requests.post(url)
-    assert api.get_response_data(response) == expected_response
+    assert network.get_response_data(response) == expected_response
     # assert api.get_response_data(response) is None
-    assert api.get_response_data(response) != {}
-    assert api.get_response_data(response) != ""
+    assert network.get_response_data(response) != {}
+    assert network.get_response_data(response) != ""
 
 
 @responses.activate
@@ -72,7 +72,7 @@ def test_get_response_data_with_a_blank_json_body():
     url = 'https://www.olitt.com/billing/includes/api.php'
     responses.add(responses.POST, url, json=None, status=204)
     response = requests.post(url)
-    assert api.get_response_data(response) is None
-    assert api.get_response_data(response) != {'key': "value"}
-    assert api.get_response_data(response) != {}
-    assert api.get_response_data(response) != ""
+    assert network.get_response_data(response) is None
+    assert network.get_response_data(response) != {'key': "value"}
+    assert network.get_response_data(response) != {}
+    assert network.get_response_data(response) != ""
