@@ -1,12 +1,38 @@
 """Whmcs models."""
 
 
-class Product:
+class Product(object):
     """This object contains a whmcs product."""
 
-    def __init__(self, whmcs_product):
+    def __init__(self, whmcs_product, currency):
+        """
+        Deserializes the whmcs product.
+        :param whmcs_product: Dictionary, the whmcs product.
+        :param currency: String, name of currency to show prices in. Eg ksh, usd
+        """
         print(whmcs_product)
         self.id = whmcs_product.get('pid')
+        self.group_id = whmcs_product.get('gid')
+        self.module = whmcs_product.get('module')
+        self.type = whmcs_product.get('type')
+        self.name = whmcs_product.get('name')
+        self.description = whmcs_product.get('description')
+        self.payment_type = whmcs_product.get('paytype')
+        whmcs_pricing = whmcs_product.get('pricing')
+        self.pricing = self.get_pricing(whmcs_pricing, currency)
+
+    @staticmethod
+    def get_pricing(whmcs_pricing, currency):
+        pricing_object = whmcs_pricing.get(currency.upper(), 'USD')
+        return {
+            'prefix': pricing_object.get('prefix'),
+            'monthly': pricing_object.get('monthly'),
+            'quarterly': pricing_object.get('quarterly'),
+            'semiannually': pricing_object.get('semiannually'),
+            'annually': pricing_object.get('annually'),
+            'biennially': pricing_object.get('biennially'),
+            'triennially': pricing_object.get('triennially'),
+        }
 
 
 """
@@ -17,17 +43,8 @@ Example response
     "products": {
         "product": [
             {
-                "pid": 92,
-                "gid": 4,
-                "type": "other",
-                "name": "Lifetime Account",
-                "description": "Free Olitt.com Domain<br /> \r\nConnect  Custom Domain<br /> \r\nNo Olitt.com Branding<br /> \r\nSSL certificate<br />\r\nSEO Friendly<br />\r\nDNS Management<br />\r\nPre-built Websites<br />\r\n5GB Disk Space<br />\r\nExternal Integrations<br />\r\nPriority Support<br />\r\n3 Websites Package<br /> ",
-                "module": "",
-                "paytype": "onetime",
                 "pricing": {
                     "CNY": {
-                        "prefix": "¥",
-                        "suffix": "",
                         "msetupfee": "0.00",
                         "qsetupfee": "0.00",
                         "ssetupfee": "0.00",
@@ -121,12 +138,6 @@ Example response
                         "biennially": "3213.49",
                         "triennially": "6426.98"
                     }
-                },
-                "customfields": {
-                    "customfield": []
-                },
-                "configoptions": {
-                    "configoption": []
                 }
             }
         ]
