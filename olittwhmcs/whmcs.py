@@ -6,7 +6,7 @@ from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters
 
 
-def get_products(group_id=None, module=None, product_ids=None):
+def get_products(currency, group_id=None, module=None, product_ids=None):
     """
     Retrieve products from WHMCS.
     :param group_id: (Optional) Integer, id of the group from which to fetch products. Omit for all groups.
@@ -23,7 +23,7 @@ def get_products(group_id=None, module=None, product_ids=None):
         whmcs_products_wrapper = response_or_error.get('products', {})
         whmcs_products = whmcs_products_wrapper.get('product', [])
         for whmcs_product in whmcs_products:
-            product = Product(whmcs_product, 'ksh')
+            product = Product(whmcs_product, currency)
             products.append(product)
         return products
     default_error = "Unable to fetch products"
