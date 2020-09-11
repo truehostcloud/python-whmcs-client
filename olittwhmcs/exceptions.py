@@ -5,6 +5,7 @@ class WhmcsException(Exception):
     """An ambiguous exception occurred while performing a whmcs action."""
 
     def __init__(self, message):
+        super().__init__()
         self.message = message
 
     def __str__(self):
