@@ -21,16 +21,12 @@ def get_products(group_id=None, module=None, product_ids=None):
     """
     parameters = get_product_request_parameters(group_id, module, product_ids)
     is_successful, response_or_error = get_whmcs_response(parameters)
-    if is_successful:
-        if response_or_error:
-            whmcs_products_wrapper = response_or_error.get('products', {})
-            whmcs_products = whmcs_products_wrapper.get('product', [])
-
-            return whmcs_products
-
-            products = []
-            for product in response_or_error:
-                products.append(Product(product))
-                return products
+    if is_successful and response_or_error:
+        products = []
+        whmcs_products_wrapper = response_or_error.get('products', {})
+        whmcs_products = whmcs_products_wrapper.get('product', [])
+        for whmcs_product in whmcs_products:
+            products.append(Product(whmcs_product))
+        return products
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
