@@ -1,6 +1,4 @@
-"""
-This module contains the functions that make networks requests to whmcs
-"""
+"""This module contains the functions that make networks requests to whmcs."""
 
 import requests
 from requests.exceptions import RequestException

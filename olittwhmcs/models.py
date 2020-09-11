@@ -1,6 +1,4 @@
-"""
-OLITT WHMCS
-"""
+"""Whmcs models."""
 
 
 class Product:

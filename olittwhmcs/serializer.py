@@ -1,6 +1,4 @@
-"""
-WHMCS API Parameters
-"""
+"""This module contains functions for processing whmcs request payloads."""
 
 import os
 

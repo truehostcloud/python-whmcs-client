@@ -1,6 +1,4 @@
-"""
-This module contains the exceptions raised by Olitt Whmcs.
-"""
+"""This module contains the exceptions raised by Olitt Whmcs."""
 
 
 class WhmcsException(Exception):

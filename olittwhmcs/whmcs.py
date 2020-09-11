@@ -1,6 +1,4 @@
-"""
-OLITT WHMCS
-"""
+"""This module contains the api surface for consuming this package."""
 
 from olittwhmcs import network
 
