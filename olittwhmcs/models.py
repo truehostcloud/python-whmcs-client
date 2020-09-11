@@ -26,10 +26,10 @@ class Product:
         pricing_object = whmcs_pricing.get(currency.upper(), default_pricing_object)
         return {
             'prefix': pricing_object.get('prefix'),
-            'monthly': pricing_object.get('monthly'),
-            'quarterly': pricing_object.get('quarterly'),
-            'semiannually': pricing_object.get('semiannually'),
-            'annually': pricing_object.get('annually'),
-            'biennially': pricing_object.get('biennially'),
-            'triennially': pricing_object.get('triennially'),
+            'monthly': float(pricing_object.get('monthly')),
+            'quarterly': float(pricing_object.get('quarterly')),
+            'semiannually': float(pricing_object.get('semiannually')),
+            'annually': float(pricing_object.get('annually')),
+            'biennially': float(pricing_object.get('biennially')),
+            'triennially': float(pricing_object.get('triennially')),
         }
