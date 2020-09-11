@@ -16,7 +16,7 @@ class Product:
         self.type = whmcs_product.get('type')
         self.name = whmcs_product.get('name')
         self.description = whmcs_product.get('description')
-        self.payment_type = whmcs_product.get('paytype')
+        self.payment_frequency = whmcs_product.get('paytype')
         whmcs_pricing = whmcs_product.get('pricing')
         self.pricing = self.get_pricing(whmcs_pricing, currency)
 
