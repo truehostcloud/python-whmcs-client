@@ -22,7 +22,8 @@ class Product:
 
     @staticmethod
     def get_pricing(whmcs_pricing, currency):
-        pricing_object = whmcs_pricing.get(currency.upper())
+        default_pricing_object = whmcs_pricing.get('USD', {})
+        pricing_object = whmcs_pricing.get(currency.upper(), default_pricing_object)
         return {
             'prefix': pricing_object.get('prefix'),
             'monthly': pricing_object.get('monthly'),
