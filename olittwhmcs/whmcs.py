@@ -1,5 +1,8 @@
 """This module contains the api surface for consuming this package."""
 
+import hashlib
+import time
+from datetime import datetime
 from olittwhmcs.exceptions import WhmcsException
 from olittwhmcs.models import Product
 from olittwhmcs.network import get_whmcs_response
@@ -56,3 +59,30 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
         return order_id, invoice_id
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+############
+# PRODUCTS #
+############
+
+def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
+    def get_timestamp():
+        timestamp_float = time.mktime(datetime.now().timetuple())
+        timestamp_int = int(timestamp_float)
+        timestamp_string = str(timestamp_int)
+        return timestamp_string
+
+    def generate_whmcs_hash(email):
+        concatenated_string = '{}{}{}'.format(email, get_timestamp(), auto_auth_key)
+        hash_object = hashlib.sha1(concatenated_string.encode())
+        pb_hash = hash_object.hexdigest()
+        return pb_hash
+
+    whmcs_hash = generate_whmcs_hash(client_email)
+
+    base_url = 'https://www.olitt.com/billing'
+
+    invoice_url = '{}{}?id={}'.format(base_url, '/viewinvoice.php', invoice_id)
+    parameters = 'email={}&timestamp={}&hash={}&goto={}'.format(client_email, get_timestamp(), whmcs_hash, invoice_url)
+    payment_url = '{}{}?{}'.format(base_url, '/dologin.php', parameters)
+    return payment_url
