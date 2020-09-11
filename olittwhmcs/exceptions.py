@@ -9,6 +9,9 @@ class WhmcsException(Exception):
     def __init__(self, message):
         self.message = message
 
+    def __str__(self):
+        return self.message
+
 
 class WhmcsConnectionError(WhmcsException):
     """An error occurred while connecting to the whmcs server"""

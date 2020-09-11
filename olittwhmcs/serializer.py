@@ -18,9 +18,9 @@ def get_default_parameters():
 def get_product_request_parameters(group_id=None, module=None, product_ids=None):
     """
     Retrieve parameters for the products request.
-    :group_id: Integer, id of the group from which to fetch products. Omit for all groups.
-    :module_name: (Optional) String, name of the module from which to fetch products. Omit for all modules.
-    :product_ids: (Optional) Integer array, list of product ids to retrieve.
+    :param group_id: (Optional) Integer, id of the group from which to fetch products.
+    :param module: (Optional) String, name of the module from which to fetch products.
+    :param product_ids: (Optional) Integer array, list of product ids to retrieve.
     """
     parameters = get_default_parameters()
     parameters.update({'action': 'GetProducts'})

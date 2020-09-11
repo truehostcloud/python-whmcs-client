@@ -1,78 +1,84 @@
 import pytest
 import requests
 import responses
+
 from olittwhmcs import network
 from olittwhmcs.exceptions import WhmcsConnectionError
 
-"""
-Test api.make_whmcs_network_request()
-- test valid response is returned is everything is ok
-- test a WhmcsConnectionError is raised if an invalid url is passed
-"""
+
+################################
+# make_whmcs_network_request() #
+################################
+
+@responses.activate
+def test_make_whmcs_network_request_returns_the_expected_response():
+    expected_response = {'error': 'not found'}
+    responses.add(responses.POST, 'https://www.olitt.com/billing/includes/api.php', json=expected_response, status=404)
+    response = network.make_whmcs_network_request({})
+    assert type(response) is requests.Response
+    assert response == responses.calls[0].response
+    assert response.status_code == 404
 
 
 @responses.activate
-def test_whmcs_response_is_returned_correctly():
-    responses.add(responses.POST, 'https://www.example.com/api', json={'error': 'not found'}, status=404)
-    responses.add(responses.POST, 'https://www.example.com/api/create', json={'id': 1}, status=200)
-
-    whmcs_response = network.make_whmcs_network_request('https://www.example.com/api', {})
-    assert whmcs_response == responses.calls[0].response
-    assert whmcs_response.status_code == 404
-
-    whmcs_response = network.make_whmcs_network_request('https://www.example.com/api/create', {})
-    assert whmcs_response == responses.calls[1].response
-    assert whmcs_response.status_code == 200
-
-
-@responses.activate
-def test_whmcs_response_is_return_a_whmcs_connection_error_when_an_invalid_url_is_passed():
+def test_make_whmcs_network_request_raises_a_whmcs_connection_error_when_an_invalid_url_is_passed():
     expected_response = {'error': 'not found'}
     responses.add(responses.POST, 'https://www.example.com/api', json=expected_response, status=404)
-
     with pytest.raises(WhmcsConnectionError):
-        network.make_whmcs_network_request('https://www.idontexist.com/api', {})
+        network.make_whmcs_network_request({})
 
 
-"""
-Test api.get_response_data()
-- test with valid json body
-- test with invalid valid json body
-- test with empty body
-"""
+#######################
+# get_response_data() #
+#######################
+
+def generate_response(url, expected_response, status):
+    responses.add(responses.POST, url, json=expected_response, status=status)
+    response = requests.post(url)
+    return response
 
 
 @responses.activate
-def test_get_response_data_with_a_valid_json_body():
-    url = 'https://www.olitt.com/billing/includes/api.php'
+def test_get_response_data_with_a_valid_json_body_returns_the_expected_dict():
     expected_response = {'error': 'not found'}
-    responses.add(responses.POST, url, json=expected_response, status=404)
-    response = requests.post(url)
-    assert type(network.get_response_data(response)) == dict
-    assert network.get_response_data(response) == expected_response
-    assert network.get_response_data(response) is not None
-    assert network.get_response_data(response) != {}
-    assert network.get_response_data(response) != ""
+    response = generate_response('https://www.olitt.com/billing/includes/api.php', expected_response, 404)
+    response_data = network.get_response_data(response)
+    assert type(response_data) is dict
+    assert response_data == expected_response
 
 
 @responses.activate
-def test_get_response_data_with_a_invalid_json_body():
-    url = 'https://www.olitt.com/billing/includes/api.php'
-    expected_response = "some html response"
-    responses.add(responses.POST, url, json=expected_response, status=404)
-    response = requests.post(url)
-    assert network.get_response_data(response) == expected_response
-    # assert api.get_response_data(response) is None
-    assert network.get_response_data(response) != {}
-    assert network.get_response_data(response) != ""
+def test_get_response_data_with_a_blank_json_body_returns_none():
+    response = generate_response('https://www.olitt.com/billing/includes/api.php', None, 204)
+    response_data = network.get_response_data(response)
+    assert response_data is None
 
 
-@responses.activate
-def test_get_response_data_with_a_blank_json_body():
-    url = 'https://www.olitt.com/billing/includes/api.php'
-    responses.add(responses.POST, url, json=None, status=204)
-    response = requests.post(url)
-    assert network.get_response_data(response) is None
-    assert network.get_response_data(response) != {'key': "value"}
-    assert network.get_response_data(response) != {}
-    assert network.get_response_data(response) != ""
+#######################
+# get_error_message() #
+#######################
+
+def test_get_error_message_returns_an_error_message_if_the_response_contains_an_error():
+    response = {'result': "error", 'message': "Something bad happened"}
+    error = network.get_error_message(response)
+    assert error == "Something bad happened"
+
+
+def test_get_error_message_returns_none_if_the_response_does_not_contains_an_error():
+    response = {'result': "success", 'message': "Something bad happened"}
+    error = network.get_error_message(response)
+    assert error is None
+    assert error != "Something bad happened"
+
+
+def test_get_error_message_returns_none_if_the_response_is_null_or_empty():
+    error = network.get_error_message(None)
+    assert error is None
+    error = network.get_error_message({})
+    assert error is None
+
+
+def test_get_error_message_returns_none_if_the_response_is_not_valid():
+    response = "<html>Something bad happened</html>"
+    error = network.get_error_message(response)
+    assert error is None
