@@ -19,6 +19,8 @@ def get_product_request_parameters(group_id=None, module=None, product_ids=None)
     :param group_id: (Optional) Integer, id of the group from which to fetch products.
     :param module: (Optional) String, name of the module from which to fetch products.
     :param product_ids: (Optional) Integer array, list of product ids to retrieve.
+    :return: payload for the get products request
+    :rtype: Dictionary
     """
     parameters = get_default_parameters()
     parameters.update({'action': 'GetProducts'})
@@ -40,8 +42,6 @@ def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
         'billingcycle': billing_cycle
     })
     for param, value in kwargs.items():
-        print(param)
-        print(value)
         if param == 'price':
             parameters.update({'priceoverride': value})
         if param == 'promo_code':
@@ -51,13 +51,18 @@ def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
     return parameters
 
 
-def order_product_request_parameters(client_id, payment_method, billing_cycle, product_id, **kwargs):
+def order_product_request_parameters(client_id, product_id, payment_method, billing_cycle, **kwargs):
     """
     Retrieve parameters for the product order request.
-    :param client_id: Integer, .
-    :param payment_method: String, .
-    :param billing_cycle: String, .
-    :param product_id: Integer, .
+    :param client_id: Integer, id of the client placing the order.
+    :param product_id: Integer, id of the product to order.
+    :param payment_method: String, preferred method of paying for the order.
+        Eg, paypal, rave, ...
+    :param billing_cycle: String, billing cycle. Eg, monthly, annually
+    :param kwargs: (Optional) Other parameters to add to the order payload.
+        Eg promo_code, affiliate_id, price (override), ...
+    :return: payload for the order product request
+    :rtype: Dictionary
     """
     parameters = order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
     parameters.update({'pid': product_id})
