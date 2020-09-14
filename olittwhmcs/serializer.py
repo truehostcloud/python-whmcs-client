@@ -13,6 +13,39 @@ def get_default_parameters():
     }
 
 
+def create_user_request_parameters(**kwargs):
+    """
+    Prepare parameters for the create user request.
+    :param kwargs: Keyword arguments with user details.
+    :return: payload for the create user request
+    :rtype: Dictionary
+    """
+    parameters = get_default_parameters()
+    parameters.update({'action': 'AddClient'})
+    for param, value in kwargs.items():
+        if param == 'first_name':
+            parameters.update({'firstname': value})
+        if param == 'last_name':
+            parameters.update({'lastname': value})
+        if param == 'email':
+            parameters.update({'email': value})
+        if param == 'country':
+            parameters.update({'country': value})
+        if param == 'state':
+            parameters.update({'state': value})
+        if param == 'city':
+            parameters.update({'city': value})
+        if param == 'postcode':
+            parameters.update({'postcode': value})
+        if param == 'address':
+            parameters.update({'address1': value})
+        if param == 'phone':
+            parameters.update({'phonenumber': value})
+        if param == 'password':
+            parameters.update({'password2': value})
+    return parameters
+
+
 def get_product_request_parameters(group_id=None, module=None, product_ids=None):
     """
     Retrieve parameters for the products request.

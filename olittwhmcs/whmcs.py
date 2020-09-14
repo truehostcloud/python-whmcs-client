@@ -6,7 +6,30 @@ from datetime import datetime
 from olittwhmcs.exceptions import WhmcsException
 from olittwhmcs.models import Product
 from olittwhmcs.network import get_whmcs_response
-from olittwhmcs.serializer import get_product_request_parameters, order_product_request_parameters
+from olittwhmcs.serializer import get_product_request_parameters, order_product_request_parameters, \
+    create_user_request_parameters
+
+
+############
+# ACCOUNTS #
+############
+
+def create_user(**kwargs):
+    """
+    Create a WHMCS User account.
+    :param kwargs: Keyword arguments with user details.
+        first_name, last_name, email, country, state, city,
+        postcode, address, phone, password
+    :return: products retrieved from whmcs
+    :rtype: list
+    :raises WhmcsException: If an error occurs.
+    """
+    parameters = create_user_request_parameters(**kwargs)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return response_or_error
+    default_error = "Unable to enroll for a billing account"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
 ############
@@ -50,6 +73,7 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
         Eg promo_code, affiliate_id, price (override), ...
     :return: id of placed order, id of corresponding invoice
     :rtype: int, int
+    :raises WhmcsException: If an error occurs.
     """
     parameters = order_product_request_parameters(client_id, product_id, payment_method, billing_cycle, **kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
@@ -62,10 +86,19 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
 
 
 ############
-# PRODUCTS #
+# INVOICES #
 ############
 
 def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
+    """
+    Generate a url to preview and pay for the invoice.
+    :param invoice_id: Integer, id of the invoice to pay.
+    :param client_email: String, email of the whmcs user.
+    :param auto_auth_key: String, key to autologin the user.
+    :return: A url to pay for an invoice.
+    :rtype: String.
+    """
+
     def get_timestamp():
         timestamp_float = time.mktime(datetime.now().timetuple())
         timestamp_int = int(timestamp_float)
