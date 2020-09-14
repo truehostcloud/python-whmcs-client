@@ -16,7 +16,8 @@ def get_whmcs_response(parameters):
     try:
         response = make_whmcs_network_request(parameters)
         response_data = get_response_data(response)
-        if response.ok:
+        result = response_data.get('result')
+        if response.ok and result == "success":
             return True, response_data
         error = get_error_message(response_data)
     except WhmcsConnectionError as e:
