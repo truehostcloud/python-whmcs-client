@@ -64,8 +64,6 @@ def get_error_message(response_data):
     if type(response_data) is dict:
         result = response_data.get('result', None)
         error = response_data.get('message', None)
-        print(result)
-        print(error)
         if result == "error":
             return error
     return None
