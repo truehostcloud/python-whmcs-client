@@ -1,4 +1,5 @@
 """Whmcs models."""
+from datetime import datetime
 
 
 class Product:
@@ -47,3 +48,25 @@ class ClientProduct:
         self.client_id = whmcs_product.get('clientid')
         self.order_id = whmcs_product.get('orderid')
         self.product_id = whmcs_product.get('pid')
+        self.registration_date = get_date_object(whmcs_product.get('regdate'), '%Y-%m-%d')
+        self.name = whmcs_product.get('name')
+        self.translated_name = whmcs_product.get('translated_name')
+        self.group_name = whmcs_product.get('groupname')
+        self.translated_group_name = whmcs_product.get('translated_groupname')
+        self.suspension_reason = whmcs_product.get('suspensionreason')
+        self.first_payment_amount = whmcs_product.get('firstpaymentamount')
+        self.recurring_amount = whmcs_product.get('recurringamount')
+        self.payment_method = whmcs_product.get('payment_method')
+        self.payment_method_name = whmcs_product.get('paymentmethodname')
+        self.billing_cycle = whmcs_product.get('billingcycle')
+        self.next_due_date = get_date_object(whmcs_product.get('nextduedate'), '%Y-%m-%d')
+        self.status = whmcs_product.get('status')
+        self.notes = whmcs_product.get('notes')
+
+
+def get_date_object(date: str, date_format: str):
+    """ Convert a string into a date object. """
+    try:
+        return datetime.strptime(date, date_format)
+    except ValueError:
+        return None
