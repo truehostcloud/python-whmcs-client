@@ -66,6 +66,26 @@ def get_product_request_parameters(group_id=None, module=None, product_ids=None)
     return parameters
 
 
+def get_user_product_request_parameters(group_id=None, module=None, product_ids=None):
+    """
+    Retrieve parameters for the user products request.
+    :param group_id: (Optional) Integer, id of the group from which to fetch products.
+    :param module: (Optional) String, name of the module from which to fetch products.
+    :param product_ids: (Optional) Integer array, list of product ids to retrieve.
+    :return: payload for the get products request
+    :rtype: Dictionary
+    """
+    parameters = get_default_parameters()
+    parameters.update({'action': 'GetProducts'})
+    if group_id:
+        parameters.update({'gid': group_id})
+    if module:
+        parameters.update({'module': module})
+    if product_ids:
+        parameters.update({'pid': ','.join(map(str, product_ids))})
+    return parameters
+
+
 def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs):
     parameters = get_default_parameters()
     parameters.update({

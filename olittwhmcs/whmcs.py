@@ -7,14 +7,14 @@ from olittwhmcs.exceptions import WhmcsException
 from olittwhmcs.models import Product
 from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, order_product_request_parameters, \
-    create_user_request_parameters
+    create_user_request_parameters, get_user_product_request_parameters
 
 
 ############
 # ACCOUNTS #
 ############
 
-def create_user(**kwargs):
+def create_client(**kwargs):
     """
     Create a WHMCS User account.
     :param kwargs: Keyword arguments with user details.
@@ -27,8 +27,8 @@ def create_user(**kwargs):
     parameters = create_user_request_parameters(**kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        user_id = response_or_error.get('clientid')
-        return user_id
+        client_id = response_or_error.get('clientid')
+        return client_id
     default_error = "Unable to enroll for a billing account"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
@@ -60,6 +60,14 @@ def get_products(currency, group_id=None, module=None, product_ids=None):
         return products
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def get_client_products(client_id, ):
+    """
+    Retrieve a user's products from WHMCS.
+    :param user_id: Integer, id of the user whose products to fetch.
+    """
+    parameters = get_user_product_request_parameters(group_id, module, product_ids)
 
 
 def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs):
