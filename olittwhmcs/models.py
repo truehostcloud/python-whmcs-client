@@ -33,3 +33,17 @@ class Product:
             'biennially': float(pricing_object.get('biennially')),
             'triennially': float(pricing_object.get('triennially')),
         }
+
+
+class ClientProduct:
+    """This object contains a whmcs client's product."""
+
+    def __init__(self, whmcs_product):
+        """
+        Deserializes the whmcs client product.
+        :param whmcs_product: Dictionary, the whmcs product.
+        """
+        self.id = whmcs_product.get('id')
+        self.client_id = whmcs_product.get('clientid')
+        self.order_id = whmcs_product.get('orderid')
+        self.product_id = whmcs_product.get('pid')

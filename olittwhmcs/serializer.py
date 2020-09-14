@@ -66,23 +66,27 @@ def get_product_request_parameters(group_id=None, module=None, product_ids=None)
     return parameters
 
 
-def get_user_product_request_parameters(group_id=None, module=None, product_ids=None):
+def get_client_product_request_parameters(client_id, product_id=None, service_id=None, domain=None):
     """
-    Retrieve parameters for the user products request.
-    :param group_id: (Optional) Integer, id of the group from which to fetch products.
-    :param module: (Optional) String, name of the module from which to fetch products.
-    :param product_ids: (Optional) Integer array, list of product ids to retrieve.
+    Retrieve parameters for the client products request.
+    :param client_id: Integer, id of the client whose products to fetch.
+    :param product_id: Integer, specific product id to obtain the details for.
+    :param service_id: Integer, specific service id to obtain the details for.
+    :param domain: String, specific domain to obtain the service details for.
     :return: payload for the get products request
     :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({'action': 'GetProducts'})
-    if group_id:
-        parameters.update({'gid': group_id})
-    if module:
-        parameters.update({'module': module})
-    if product_ids:
-        parameters.update({'pid': ','.join(map(str, product_ids))})
+    parameters.update({
+        'action': 'GetClientsProducts',
+        'clientid': str(client_id)
+    })
+    if product_id:
+        parameters.update({'pid': product_id})
+    if service_id:
+        parameters.update({'serviceid': service_id})
+    if domain:
+        parameters.update({'domain': domain})
     return parameters
 
 

@@ -3,11 +3,12 @@
 import hashlib
 import time
 from datetime import datetime
+
 from olittwhmcs.exceptions import WhmcsException
-from olittwhmcs.models import Product
+from olittwhmcs.models import Product, ClientProduct
 from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, order_product_request_parameters, \
-    create_user_request_parameters, get_user_product_request_parameters
+    create_user_request_parameters, get_client_product_request_parameters
 
 
 ############
@@ -62,12 +63,26 @@ def get_products(currency, group_id=None, module=None, product_ids=None):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def get_client_products(client_id, ):
+def get_client_products(client_id, product_id=None, service_id=None, domain=None):
     """
     Retrieve a user's products from WHMCS.
-    :param user_id: Integer, id of the user whose products to fetch.
+    :param client_id: Integer, id of the client whose products to fetch.
+    :param product_id: Integer, specific product id to obtain the details for.
+    :param service_id: Integer, specific service id to obtain the details for.
+    :param domain: String, specific domain to obtain the service details for.
     """
-    parameters = get_user_product_request_parameters(group_id, module, product_ids)
+    parameters = get_client_product_request_parameters(client_id, product_id, service_id, domain)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful:
+        client_products = []
+        whmcs_products_wrapper = response_or_error.get('products', {})
+        whmcs_products = whmcs_products_wrapper.get('product', [])
+        for whmcs_product in whmcs_products:
+            client_product = ClientProduct(whmcs_product)
+            client_products.append(client_product)
+        return client_products
+    default_error = "Unable to fetch your products"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
 def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs):
