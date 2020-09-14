@@ -27,7 +27,8 @@ def create_user(**kwargs):
     parameters = create_user_request_parameters(**kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        return response_or_error
+        user_id = response_or_error.get('clientid')
+        return user_id
     default_error = "Unable to enroll for a billing account"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
