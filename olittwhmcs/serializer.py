@@ -46,6 +46,24 @@ def create_user_request_parameters(**kwargs):
     return parameters
 
 
+def get_client_request_parameters(email=None, client_id=None):
+    """
+    Prepare parameters for the get client request.
+    Args:
+      email: (Optional) String email of client to retrieve.
+      client_id: (Optional) Integer, id of client to retrieve.
+    Returns:
+      Dictionary, parameters for the get client details request.
+    """
+    parameters = get_default_parameters()
+    parameters.update({'action': 'GetClientsDetails'})
+    if email:
+        parameters.update({'email': email})
+    if client_id:
+        parameters.update({'clientid': client_id})
+    return parameters
+
+
 def get_product_request_parameters(group_id=None, module=None, product_ids=None):
     """
     Retrieve parameters for the products request.
@@ -66,7 +84,8 @@ def get_product_request_parameters(group_id=None, module=None, product_ids=None)
     return parameters
 
 
-def get_client_product_request_parameters(client_id, product_id=None, service_id=None, domain=None):
+def get_client_product_request_parameters(client_id, product_id=None, service_id=None,
+                                          domain=None):
     """
     Retrieve parameters for the client products request.
     :param client_id: Integer, id of the client whose products to fetch.
@@ -108,7 +127,8 @@ def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
     return parameters
 
 
-def order_product_request_parameters(client_id, product_id, payment_method, billing_cycle, **kwargs):
+def order_product_request_parameters(client_id, product_id, payment_method,
+                                     billing_cycle, **kwargs):
     """
     Retrieve parameters for the product order request.
     :param client_id: Integer, id of the client placing the order.
@@ -121,6 +141,7 @@ def order_product_request_parameters(client_id, product_id, payment_method, bill
     :return: payload for the order product request
     :rtype: Dictionary
     """
-    parameters = order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
+    parameters = order_request_parameters(client_id, payment_method, billing_cycle,
+                                          **kwargs)
     parameters.update({'pid': product_id})
     return parameters

@@ -4,10 +4,12 @@ import hashlib
 import time
 from datetime import datetime
 
+from olittwhmcs import serializer
 from olittwhmcs.exceptions import WhmcsException
-from olittwhmcs.models import Product, ClientProduct
+from olittwhmcs.models import Product, ClientProduct, Client
 from olittwhmcs.network import get_whmcs_response
-from olittwhmcs.serializer import get_product_request_parameters, order_product_request_parameters, \
+from olittwhmcs.serializer import get_product_request_parameters, \
+    order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters
 
 
@@ -34,16 +36,39 @@ def create_client(**kwargs):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
+def get_client(email, client_id=None):
+    """
+    Retrieve a WHMCS User account.
+    Args:
+      email: String email of client to retrieve.
+      client_id: (Optional) Integer, id of client to retrieve.
+    Returns:
+      The new minimum port.
+    Raises:
+      WhmcsException: If an error occurs.
+    """
+    parameters = serializer.get_client_request_parameters(email, client_id)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        client = Client(response_or_error)
+        return client
+    default_error = "Unable to get client details"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
 ############
 # PRODUCTS #
 ############
 
-def get_products(currency, group_id=None, module=None, product_ids=None):
+def get_products(currency=None, group_id=None, module=None, product_ids=None):
     """
     Retrieve products from WHMCS.
-    :param currency: String, currency in which to display prices. Eg, kes, usd...
-    :param group_id: (Optional) Integer, id of the group from which to fetch products. Omit for all groups.
-    :param module: (Optional) String, name of the module from which to fetch products. Omit for all modules.
+    :param currency: (Optional) String, currency to display prices. Eg kes, usd.
+        Omit for all
+    :param group_id: (Optional) Integer, id of the group from which to fetch products.
+        Omit for all groups.
+    :param module: (Optional) String, name of the module from which to fetch products.
+        Omit for all modules.
     :param product_ids: (Optional) Integer array, list of product ids to retrieve.
     :return: products retrieved from whmcs
     :rtype: list
@@ -71,7 +96,8 @@ def get_client_products(client_id, product_id=None, service_id=None, domain=None
     :param service_id: Integer, specific service id to obtain the details for.
     :param domain: String, specific domain to obtain the service details for.
     """
-    parameters = get_client_product_request_parameters(client_id, product_id, service_id, domain)
+    parameters = get_client_product_request_parameters(client_id, product_id,
+                                                       service_id, domain)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful:
         client_products = []
@@ -99,7 +125,8 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
     :rtype: int, int
     :raises WhmcsException: If an error occurs.
     """
-    parameters = order_product_request_parameters(client_id, product_id, payment_method, billing_cycle, **kwargs)
+    parameters = order_product_request_parameters(client_id, product_id, payment_method,
+                                                  billing_cycle, **kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         order_id = response_or_error.get('orderid')
@@ -140,6 +167,8 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
     base_url = 'https://www.olitt.com/billing'
 
     invoice_url = '{}{}?id={}'.format(base_url, '/viewinvoice.php', invoice_id)
-    parameters = 'email={}&timestamp={}&hash={}&goto={}'.format(client_email, get_timestamp(), whmcs_hash, invoice_url)
+    parameters = 'email={}&timestamp={}&hash={}&goto={}'.format(client_email,
+                                                                get_timestamp(),
+                                                                whmcs_hash, invoice_url)
     payment_url = '{}{}?{}'.format(base_url, '/dologin.php', parameters)
     return payment_url
