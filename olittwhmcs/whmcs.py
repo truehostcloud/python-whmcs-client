@@ -36,14 +36,14 @@ def create_client(**kwargs):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def get_client(email, client_id=None):
+def get_client(email=None, client_id=None):
     """
     Retrieve a WHMCS User account.
     Args:
-      email: String email of client to retrieve.
-      client_id: (Optional) Integer, id of client to retrieve.
+      email (str): (Optional) email of client to retrieve.
+      client_id (int): (Optional) id of client to retrieve.
     Returns:
-      The new minimum port.
+      Client: The client retrieved from whmcs
     Raises:
       WhmcsException: If an error occurs.
     """
