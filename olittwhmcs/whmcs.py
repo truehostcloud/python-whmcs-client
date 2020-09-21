@@ -154,7 +154,8 @@ def upgrade_product(service_id, payment_method, billing_cycle=None, package_id=N
                                                     billing_cycle, package_id)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        return response_or_error
+        service_id = response_or_error.get('serviceid')
+        return service_id
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
