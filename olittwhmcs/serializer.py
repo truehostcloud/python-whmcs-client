@@ -145,3 +145,37 @@ def order_product_request_parameters(client_id, product_id, payment_method,
                                           **kwargs)
     parameters.update({'pid': product_id})
     return parameters
+
+
+def upgrade_product_request_parameters(
+        service_id, payment_method, service_type, new_product_id=None,
+        new_product_billing_cycle=None, promo_code=None
+):
+    """Retrieve parameters for the product upgrade request.
+
+    Args:
+       service_id (int): ID of the service to update.
+       payment_method (str): Preferred method of paying for the upgrade.
+           Eg, paypal, rave, ...
+       service_type (str): type of upgrade.
+           Eg, product, configoptions, ...
+       new_product_id (str): (Optional), Id of the new product.
+       new_product_billing_cycle (str): (Optional), new product's billing cycle.
+       promo_code (str): (Optional), promotion code to apply to the upgrade.
+    Returns:
+        Dictionary: Parameters for the upgrade product request
+    """
+    parameters = get_default_parameters()
+    parameters.update({
+        'action': 'UpgradeProduct',
+        'serviceid': service_id,
+        'paymentmethod': payment_method,
+        'type': service_type
+    })
+    if new_product_id:
+        parameters.update({'newproductid': new_product_id})
+    if new_product_billing_cycle:
+        parameters.update({'newproductbillingcycle': new_product_billing_cycle})
+    if promo_code:
+        parameters.update({'promocode': promo_code})
+    return parameters
