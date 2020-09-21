@@ -10,7 +10,7 @@ from olittwhmcs.models import Product, ClientProduct, Client
 from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
-    create_user_request_parameters, get_client_product_request_parameters
+    create_user_request_parameters, get_client_product_request_parameters, upgrade_product_request_parameters
 
 
 ############
@@ -37,8 +37,8 @@ def create_client(**kwargs):
 
 
 def get_client(email=None, client_id=None):
-    """
-    Retrieve a WHMCS User account.
+    """Retrieve a WHMCS User account.
+
     Args:
       email (str): (Optional) email of client to retrieve.
       client_id (int): (Optional) id of client to retrieve.
@@ -132,6 +132,34 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
         order_id = response_or_error.get('orderid')
         invoice_id = response_or_error.get('invoiceid')
         return order_id, invoice_id
+    default_error = "Unable to fetch products"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def upgrade_product(service_id, payment_method, service_type, new_product_id=None,
+                    new_product_billing_cycle=None, promo_code=None):
+    """Upgrade a product in WHMCS.
+
+    Args:
+        service_id (int): ID of the service to update.
+        payment_method (str): Preferred method of paying for the upgrade.
+            Eg, paypal, rave, ...
+        service_type (str): type of upgrade.
+            Eg, product, configoptions, ...
+        new_product_id (str): (Optional), Id of the new product.
+        new_product_billing_cycle (str): (Optional), new product's billing cycle.
+        promo_code (str): (Optional), promotion code to apply to the upgrade.
+    Returns:
+      Client: The client retrieved from whmcs
+    Raises:
+      WhmcsException: If an error occurs.
+    """
+    parameters = upgrade_product_request_parameters(
+        service_id, payment_method,
+        service_type, new_product_id, new_product_billing_cycle, promo_code)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return response_or_error
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
