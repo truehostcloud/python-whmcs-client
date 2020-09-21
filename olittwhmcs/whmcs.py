@@ -136,27 +136,22 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def upgrade_product(service_id, payment_method, service_type, new_product_id=None,
-                    new_product_billing_cycle=None, promo_code=None):
+def upgrade_product(service_id, payment_method, billing_cycle=None, package_id=None):
     """Upgrade a product in WHMCS.
 
     Args:
         service_id (int): ID of the service to update.
         payment_method (str): Preferred method of paying for the upgrade.
             Eg, paypal, rave, ...
-        service_type (str): type of upgrade.
-            Eg, product, configoptions, ...
-        new_product_id (int): (Optional), Id of the new product.
-        new_product_billing_cycle (str): (Optional), new product's billing cycle.
-        promo_code (str): (Optional), promotion code to apply to the upgrade.
+        billing_cycle (str): (Optional), new product's billing cycle.
+        package_id (int): (Optional), package ID to associate with the service.
     Returns:
       Client: The client retrieved from whmcs
     Raises:
       WhmcsException: If an error occurs.
     """
-    parameters = upgrade_product_request_parameters(
-        service_id, payment_method,
-        service_type, new_product_id, new_product_billing_cycle, promo_code)
+    parameters = upgrade_product_request_parameters(service_id, payment_method,
+                                                    billing_cycle, package_id)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         return response_or_error
