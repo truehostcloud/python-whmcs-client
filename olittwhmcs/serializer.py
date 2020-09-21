@@ -159,7 +159,7 @@ def upgrade_product_request_parameters(
            Eg, paypal, rave, ...
        service_type (str): type of upgrade.
            Eg, product, configoptions, ...
-       new_product_id (str): (Optional), Id of the new product.
+       new_product_id (int): (Optional), Id of the new product.
        new_product_billing_cycle (str): (Optional), new product's billing cycle.
        promo_code (str): (Optional), promotion code to apply to the upgrade.
     Returns:
