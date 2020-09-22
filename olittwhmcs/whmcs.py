@@ -18,14 +18,16 @@ from olittwhmcs.serializer import get_product_request_parameters, \
 ############
 
 def create_client(**kwargs):
-    """
-    Create a WHMCS User account.
-    :param kwargs: Keyword arguments with user details.
-        first_name, last_name, email, country, state, city,
-        postcode, address, phone, password
-    :return: products retrieved from whmcs
-    :rtype: list
-    :raises WhmcsException: If an error occurs.
+    """Create a WHMCS User account.
+
+    Args:
+        kwargs: Keyword arguments with user details.
+            first_name, last_name, email, country, state, city, postcode, address,
+            phone, password
+    Returns:
+        list: products retrieved from whmcs
+    Raises:
+        WhmcsException: If an error occurs.
     """
     parameters = create_user_request_parameters(**kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
@@ -40,12 +42,12 @@ def get_client(email=None, client_id=None):
     """Retrieve a WHMCS User account.
 
     Args:
-      email (str): (Optional) email of client to retrieve.
-      client_id (int): (Optional) id of client to retrieve.
+        email (str): (Optional) email of client to retrieve.
+        client_id (int): (Optional) id of client to retrieve.
     Returns:
-      Client: The client retrieved from whmcs
+        Client: The client retrieved from whmcs
     Raises:
-      WhmcsException: If an error occurs.
+        WhmcsException: If an error occurs.
     """
     parameters = serializer.get_client_request_parameters(email, client_id)
     is_successful, response_or_error = get_whmcs_response(parameters)
@@ -61,18 +63,17 @@ def get_client(email=None, client_id=None):
 ############
 
 def get_products(currency=None, group_id=None, module=None, product_ids=None):
-    """
-    Retrieve products from WHMCS.
-    :param currency: (Optional) String, currency to display prices. Eg kes, usd.
-        Omit for all
-    :param group_id: (Optional) Integer, id of the group from which to fetch products.
-        Omit for all groups.
-    :param module: (Optional) String, name of the module from which to fetch products.
-        Omit for all modules.
-    :param product_ids: (Optional) Integer array, list of product ids to retrieve.
-    :return: products retrieved from whmcs
-    :rtype: list
-    :raises WhmcsException: If an error occurs.
+    """Retrieve products from WHMCS.
+
+    Args:
+        currency (str): Optional. Currency to display prices. Eg kes, usd.
+        group_id (int): Optional. ID of the group from which to fetch products.
+        module (str): Optional. Name of the module from which to fetch products.
+        product_ids (list): Optional. Product ids to retrieve.
+    Returns:
+        list: Products retrieved from whmcs
+    Raises:
+        WhmcsException: If an error occurs.
     """
     parameters = get_product_request_parameters(group_id, module, product_ids)
     is_successful, response_or_error = get_whmcs_response(parameters)
@@ -146,9 +147,9 @@ def upgrade_product(service_id, payment_method, billing_cycle=None, package_id=N
         billing_cycle (str): (Optional), new product's billing cycle.
         package_id (int): (Optional), package ID to associate with the service.
     Returns:
-      Client: The client retrieved from whmcs
+        Client: The client retrieved from whmcs
     Raises:
-      WhmcsException: If an error occurs.
+        WhmcsException: If an error occurs.
     """
     parameters = upgrade_product_request_parameters(service_id, payment_method,
                                                     billing_cycle, package_id)
