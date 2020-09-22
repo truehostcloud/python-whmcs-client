@@ -4,18 +4,19 @@ import hashlib
 import time
 from datetime import datetime
 
-from olittwhmcs import serializer
+from olittwhmcs import serializer, models
 from olittwhmcs.exceptions import WhmcsException
 from olittwhmcs.models import Product, ClientProduct, Client
 from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
-    create_user_request_parameters, get_client_product_request_parameters, upgrade_product_request_parameters
+    create_user_request_parameters, get_client_product_request_parameters, \
+    upgrade_product_request_parameters
 
 
-############
-# ACCOUNTS #
-############
+##########
+# CLIENT #
+##########
 
 def create_client(**kwargs):
     """Create a WHMCS User account.
@@ -58,9 +59,9 @@ def get_client(email=None, client_id=None):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-############
-# PRODUCTS #
-############
+###########
+# PRODUCT #
+###########
 
 def get_products(currency=None, group_id=None, module=None, product_ids=None):
     """Retrieve products from WHMCS.
@@ -137,7 +138,8 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def upgrade_product(service_id, payment_method, billing_cycle=None, package_id=None):
+def upgrade_client_product(service_id, payment_method, billing_cycle=None,
+                           package_id=None):
     """Upgrade a product in WHMCS.
 
     Args:
@@ -161,9 +163,40 @@ def upgrade_product(service_id, payment_method, billing_cycle=None, package_id=N
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-############
-# INVOICES #
-############
+###########
+# SERVICE #
+###########
+
+def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=None,
+                    new_billing_cycle=None, promo_code=None):
+    """Upgrade, or calculate an upgrade on, a product.
+
+    Args:
+        service_id (int): ID of the service to update.
+        payment_method (str): Upgrade payment method in system format (e.g. paypal).
+        upgrade_type (str): Type of upgrade (product, configoptions).
+        new_product_id (int): Optional. ID of the new product.
+        new_billing_cycle (str): Optional. New products billing cycle.
+        promo_code (str): Optional. Promotion code to apply to the upgrade.
+    Returns:
+        dict:
+    Raises:
+        WhmcsException: If an error occurs.
+    """
+    parameters = serializer.get_upgrade_product_parameters(service_id, payment_method,
+                                                           upgrade_type, new_product_id,
+                                                           new_billing_cycle,
+                                                           promo_code)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return models.ProductUpgrade(response_or_error)
+    default_error = "Unable to complete upgrade"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+###########
+# INVOICE #
+###########
 
 def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
     """

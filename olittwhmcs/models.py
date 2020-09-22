@@ -102,3 +102,21 @@ def get_date_object(date: str, date_format: str):
         return datetime.strptime(date, date_format)
     except ValueError:
         return None
+
+
+class ProductUpgrade:
+    """Deserialize upgrade product response."""
+
+    def __init__(self, response):
+        """Obtain values from dictionary and store in instance."""
+        self.id = response.get('id')
+        self.old_product_id = response.get('oldproductid')
+        self.old_product_name = response.get('oldproductname')
+        self.new_product_id = response.get('newproductid')
+        self.new_product_name = response.get('newproductid')
+        self.new_product_billing_cycle = response.get('newproductbillingcycle')
+        self.days_until_renewal = response.get('daysuntilrenewal')
+        self.price = response.get('price')
+        self.order_id = response.get('orderid')
+        self.order_number = response.get('order_number')
+        self.invoice_id = response.get('invoiceid')
