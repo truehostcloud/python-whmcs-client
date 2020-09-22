@@ -179,7 +179,7 @@ def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=Non
         new_billing_cycle (str): Optional. New products billing cycle.
         promo_code (str): Optional. Promotion code to apply to the upgrade.
     Returns:
-        ProductUpgrade: data obtained after completing request.
+        ProductUpgrade: Instance of 'upgrade product' response.
     Raises:
         WhmcsException: If an error occurs.
     """
