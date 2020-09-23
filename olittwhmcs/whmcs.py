@@ -80,8 +80,11 @@ def get_products(currency=None, group_id=None, module=None, product_ids=None):
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         products = []
-        whmcs_products_wrapper = response_or_error.get('products', {})
-        whmcs_products = whmcs_products_wrapper.get('product', [])
+        whmcs_products_wrapper = response_or_error.get('products', '')
+        try:
+            whmcs_products = whmcs_products_wrapper.get('product')
+        except AttributeError:
+            whmcs_products = []
         for whmcs_product in whmcs_products:
             product = Product(whmcs_product, currency)
             products.append(product)
