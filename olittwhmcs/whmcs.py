@@ -79,12 +79,13 @@ def get_products(currency=None, group_id=None, module=None, product_ids=None):
     parameters = get_product_request_parameters(group_id, module, product_ids)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        products = []
-        whmcs_products_wrapper = response_or_error.get('products', '')
         try:
+            whmcs_products_wrapper = response_or_error.get('products', '')
             whmcs_products = whmcs_products_wrapper.get('product')
         except AttributeError:
             whmcs_products = []
+            
+        products = []
         for whmcs_product in whmcs_products:
             product = Product(whmcs_product, currency)
             products.append(product)
@@ -105,9 +106,13 @@ def get_client_products(client_id, product_id=None, service_id=None, domain=None
                                                        service_id, domain)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful:
+        try:
+            whmcs_products_wrapper = response_or_error.get('products', '')
+            whmcs_products = whmcs_products_wrapper.get('product', [])
+        except AttributeError:
+            whmcs_products = []
+
         client_products = []
-        whmcs_products_wrapper = response_or_error.get('products', {})
-        whmcs_products = whmcs_products_wrapper.get('product', [])
         for whmcs_product in whmcs_products:
             client_product = ClientProduct(whmcs_product)
             client_products.append(client_product)
