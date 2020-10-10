@@ -257,6 +257,16 @@ def get_invoices(client_id=None, status=None, order_by=None, order=None):
     parameters = prepare_get_invoices_request(client_id, status, order_by, order)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        return models.Invoice(response_or_error)
+        try:
+            whmcs_invoices_wrapper = response_or_error.get('invoices')
+            whmcs_invoices = whmcs_invoices_wrapper.get('invoice')
+        except AttributeError:
+            whmcs_invoices = []
+
+        invoices = []
+        for whmcs_invoice in whmcs_invoices:
+            invoice = models.Invoice(whmcs_invoice)
+            invoices.append(invoice)
+        return invoices
     default_error = "Unable to fetch invoices"
     raise WhmcsException(response_or_error if response_or_error else default_error)
