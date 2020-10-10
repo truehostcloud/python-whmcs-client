@@ -1,6 +1,7 @@
 """This module contains the api surface for consuming this package."""
 
 import hashlib
+import os
 import time
 from datetime import datetime
 
@@ -287,7 +288,7 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
 
     whmcs_hash = generate_whmcs_hash(client_email)
 
-    base_url = 'https://www.olitt.com/billing'
+    base_url = os.environ.get('WHMCS_CLIENT_AREA_URL', 'https://www.olitt.com/billing')
 
     invoice_url = '{}{}?id={}'.format(base_url, '/viewinvoice.php', invoice_id)
     parameters = 'email={}&timestamp={}&hash={}&goto={}'.format(client_email,
