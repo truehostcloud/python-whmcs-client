@@ -122,6 +122,43 @@ class ProductUpgrade:
         self.invoice_id = response.get('invoiceid')
 
 
+class Order:
+    """This object contains a whmcs invoice."""
+
+    def __init__(self, whmcs_order):
+        """Deserializes the whmcs order.
+
+        Args:
+            whmcs_order (dict): Response obtained from whmcs.
+        """
+        self.id = whmcs_order.get('id')
+        self.order_number = whmcs_order.get('ordernum')
+        self.order_data = whmcs_order.get('orderdata')
+        self.client_id = whmcs_order.get('userid')
+
+        self.date = get_date_object(whmcs_order.get('date'), '%Y-%m-%d %H:%M:%S')
+
+        self.nameservers = (whmcs_order.get('nameservers'))
+        self.transfer_secret = (whmcs_order.get('transfersecret'))
+        self.renewals = whmcs_order.get('renewals')
+
+        self.promo_code = whmcs_order.get('promocode')
+        self.promo_type = whmcs_order.get('promotype')
+        self.promo_value = whmcs_order.get('promovalue')
+
+        self.amount = whmcs_order.get('amount')
+        self.invoice_id = whmcs_order.get('invoiceid')
+        self.payment_status = whmcs_order.get('paymentstatus')
+        self.payment_method = whmcs_order.get('paymentmethod')
+
+        self.fraud_module = whmcs_order.get('fraudmodule')
+        self.fraud_output = whmcs_order.get('fraudoutput')
+        self.fraud_data = whmcs_order.get('frauddata')
+
+        self.status = whmcs_order.get('status')
+        self.notes = whmcs_order.get('notes')
+
+
 class Invoice:
     """This object contains a whmcs invoice."""
 

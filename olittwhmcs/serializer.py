@@ -198,6 +198,23 @@ def get_upgrade_product_parameters(service_id, payment_method, upgrade_type,
 
 
 ###########
+# ORDER #
+###########
+
+def prepare_get_orders_request(client_id, order_id, status):
+    """Prepare parameters for the get orders request."""
+    parameters = get_default_parameters()
+    parameters.update({'action': 'GetOrders'})
+    if client_id:
+        parameters.update({'userid': client_id})
+    if status:
+        parameters.update({'status': status})
+    if order_id:
+        parameters.update({'id': order_id})
+    return parameters
+
+
+###########
 # INVOICE #
 ###########
 

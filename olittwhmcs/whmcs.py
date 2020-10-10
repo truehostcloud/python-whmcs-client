@@ -11,7 +11,8 @@ from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
-    upgrade_product_request_parameters, prepare_get_invoices_request
+    upgrade_product_request_parameters, prepare_get_invoices_request, \
+    prepare_get_orders_request
 
 
 ##########
@@ -202,6 +203,40 @@ def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=Non
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
+#########
+# ORDER #
+#########
+
+def get_orders(client_id=None, order_id=None, status=None):
+    """Retrieve a WHMCS orders.
+
+    Args:
+        client_id (int): (Optional) ID of client whose orders to retrieve.
+        order_id (int): (Optional) ID of the order retrieve.
+        status (str): (Optional) Status of the order to retrieve.
+    Returns:
+        list: Orders retrieved from whmcs
+    Raises:
+        WhmcsException: If an error occurs.
+    """
+    parameters = prepare_get_orders_request(client_id, order_id, status)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        try:
+            whmcs_orders_wrapper = response_or_error.get('orders')
+            whmcs_orders = whmcs_orders_wrapper.get('order')
+        except AttributeError:
+            whmcs_orders = []
+
+        orders = []
+        for whmcs_order in whmcs_orders:
+            order = models.Order(whmcs_order)
+            orders.append(order)
+        return orders
+    default_error = "Unable to fetch orders"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
 ###########
 # INVOICE #
 ###########
@@ -241,7 +276,7 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
 
 
 def get_invoices(client_id=None, status=None, order_by=None, order=None):
-    """Retrieve a WHMCS User account.
+    """Retrieve a WHMCS invoices.
 
     Args:
         client_id (int): (Optional) ID of client whose invoices to retrieve.
