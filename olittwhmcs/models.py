@@ -125,19 +125,34 @@ class ProductUpgrade:
 class Invoice:
     """This object contains a whmcs invoice."""
 
-    def __init__(self, whmcs_product, currency):
-        """Deserializes the whmcs product.
+    def __init__(self, whmcs_invoice):
+        """Deserializes the whmcs invoice.
 
         Args:
-            whmcs_product (dict): Response obtained from whmcs.
-            currency (str): Currency to get prices in.
+            whmcs_invoice (dict): Response obtained from whmcs.
         """
-        self.id = whmcs_product.get('pid')
-        self.group_id = whmcs_product.get('gid')
-        self.module = whmcs_product.get('module')
-        self.type = whmcs_product.get('type')
-        self.name = whmcs_product.get('name')
-        self.description = whmcs_product.get('description')
-        self.billing_cycle = whmcs_product.get('paytype')
-        whmcs_pricing = whmcs_product.get('pricing')
-        self.pricing = self.get_pricing(whmcs_pricing, currency)
+        self.id = whmcs_invoice.get('id')
+        self.invoice_number = whmcs_invoice.get('invoicenum')
+        self.client_id = whmcs_invoice.get('userid')
+
+        self.date_created = get_date_object(whmcs_invoice.get('date'), '%Y-%m-%d')
+        self.date_due = get_date_object(whmcs_invoice.get('duedate'), '%Y-%m-%d')
+        self.date_paid = get_date_object(
+            whmcs_invoice.get('datepaid'),
+            '%Y-%m-%d %H:%M:%S')
+        self.last_capture_attempt = get_date_object(
+            whmcs_invoice.get('last_capture_attempt'),
+            '%Y-%m-%d %H:%M:%S')
+
+        self.sub_total = float(whmcs_invoice.get('subtotal'))
+        self.total = float(whmcs_invoice.get('total'))
+        self.credit = float(whmcs_invoice.get('credit'))
+
+        self.tax = float(whmcs_invoice.get('tax'))
+        self.tax2 = float(whmcs_invoice.get('tax2'))
+        self.tax_rate = float(whmcs_invoice.get('taxrate'))
+        self.tax_rate_2 = float(whmcs_invoice.get('taxrate2'))
+
+        self.status = whmcs_invoice.get('status')
+        self.payment_method = whmcs_invoice.get('paymentmethod')
+        self.notes = whmcs_invoice.get('notes')
