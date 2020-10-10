@@ -195,3 +195,22 @@ def get_upgrade_product_parameters(service_id, payment_method, upgrade_type,
     if promo_code:
         parameters.update({'promocode': promo_code})
     return parameters
+
+
+###########
+# INVOICE #
+###########
+
+def prepare_get_invoices_request(client_id, status, order_by, order):
+    """Prepare parameters for the get invoices request."""
+    parameters = get_default_parameters()
+    parameters.update({'action': 'GetInvoices'})
+    if client_id:
+        parameters.update({'userid': client_id})
+    if status:
+        parameters.update({'status': status})
+    if order_by:
+        parameters.update({'orderby': order_by})
+    if order:
+        parameters.update({'order': order})
+    return parameters

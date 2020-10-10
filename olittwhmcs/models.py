@@ -120,3 +120,24 @@ class ProductUpgrade:
         self.order_id = response.get('orderid')
         self.order_number = response.get('order_number')
         self.invoice_id = response.get('invoiceid')
+
+
+class Invoice:
+    """This object contains a whmcs invoice."""
+
+    def __init__(self, whmcs_product, currency):
+        """Deserializes the whmcs product.
+
+        Args:
+            whmcs_product (dict): Response obtained from whmcs.
+            currency (str): Currency to get prices in.
+        """
+        self.id = whmcs_product.get('pid')
+        self.group_id = whmcs_product.get('gid')
+        self.module = whmcs_product.get('module')
+        self.type = whmcs_product.get('type')
+        self.name = whmcs_product.get('name')
+        self.description = whmcs_product.get('description')
+        self.billing_cycle = whmcs_product.get('paytype')
+        whmcs_pricing = whmcs_product.get('pricing')
+        self.pricing = self.get_pricing(whmcs_pricing, currency)

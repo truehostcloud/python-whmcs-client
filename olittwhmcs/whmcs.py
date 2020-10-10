@@ -11,7 +11,7 @@ from olittwhmcs.network import get_whmcs_response
 from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
-    upgrade_product_request_parameters
+    upgrade_product_request_parameters, prepare_get_invoices_request
 
 
 ##########
@@ -84,7 +84,7 @@ def get_products(currency=None, group_id=None, module=None, product_ids=None):
             whmcs_products = whmcs_products_wrapper.get('product')
         except AttributeError:
             whmcs_products = []
-            
+
         products = []
         for whmcs_product in whmcs_products:
             product = Product(whmcs_product, currency)
@@ -238,3 +238,25 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
                                                                 whmcs_hash, invoice_url)
     payment_url = '{}{}?{}'.format(base_url, '/dologin.php', parameters)
     return payment_url
+
+
+def get_invoices(client_id=None, status=None, order_by=None, order=None):
+    """Retrieve a WHMCS User account.
+
+    Args:
+        client_id (int): (Optional) ID of client whose invoices to retrieve.
+        status (str): (Optional) Status of the invoices to retrieve.
+        order (str): (Optional) Sort attribute. Accepted values are: asc, desc.
+        order_by (str): (Optional) Field to sort results by. Accepted values are:
+            id, invoicenumber, date, duedate, total, status.
+    Returns:
+        list: Invoices retrieved from whmcs
+    Raises:
+        WhmcsException: If an error occurs.
+    """
+    parameters = prepare_get_invoices_request(client_id, status, order_by, order)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return models.Invoice(response_or_error)
+    default_error = "Unable to fetch invoices"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
