@@ -1,5 +1,5 @@
 """Whmcs models."""
-
+import re
 from datetime import datetime
 
 
@@ -157,6 +157,30 @@ class Order:
 
         self.status = whmcs_order.get('status')
         self.notes = whmcs_order.get('notes')
+
+        items = []
+        try:
+            order_items_wrapper = whmcs_order.get('lineitems')
+            order_items = order_items_wrapper.get('lineitem')
+            for order_item in order_items:
+                items.append(self.get_order_items(order_item))
+        except AttributeError:
+            pass
+        self.items = items
+
+    @staticmethod
+    def get_order_items(whmcs_order_item):
+        amount = whmcs_order_item.get('amount')
+        return {
+            'order_type': whmcs_order_item.get('type'),
+            'rel_id': whmcs_order_item.get('relid'),
+            'product': whmcs_order_item.get('product'),
+            'product_type': whmcs_order_item.get('producttype'),
+            'domain': whmcs_order_item.get('domain'),
+            'billing_cycle': whmcs_order_item.get('billingcycle'),
+            'amount': float(re.compile(r'\d+(?:\.\d+)?').findall(amount)[0]),
+            'status': whmcs_order_item.get('status')
+        }
 
 
 class Invoice:
