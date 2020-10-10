@@ -214,6 +214,19 @@ def prepare_get_orders_request(client_id, order_id, status):
     return parameters
 
 
+def prepare_cancel_order_request(order_id, cancel_subscription, no_email):
+    """Prepare parameters for the cancel order request."""
+    parameters = get_default_parameters()
+    parameters.update({'action': 'CancelOrder'})
+    if order_id:
+        parameters.update({'orderid': order_id})
+    if cancel_subscription:
+        parameters.update({'cancelsub': cancel_subscription})
+    if no_email:
+        parameters.update({'noemail': no_email})
+    return parameters
+
+
 ###########
 # INVOICE #
 ###########

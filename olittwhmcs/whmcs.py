@@ -12,7 +12,7 @@ from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
     upgrade_product_request_parameters, prepare_get_invoices_request, \
-    prepare_get_orders_request
+    prepare_get_orders_request, prepare_cancel_order_request
 
 
 ##########
@@ -234,6 +234,28 @@ def get_orders(client_id=None, order_id=None, status=None):
             orders.append(order)
         return orders
     default_error = "Unable to fetch orders"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def cancel_order(order_id, cancel_subscription=None, no_email=None):
+    """Cancel a WHMCS order.
+
+    Args:
+        order_id (int): (Optional) ID of the order to cancel.
+        cancel_subscription (bool): (Optional) Attempts to cancel the subscription
+            associated with the product if True.
+        no_email (bool): (Optional) Stops the invoice payment email from being sent if
+            the invoice becomes paid if True.
+    Returns:
+        bool: True if order was cancelled, False otherwise.
+    Raises:
+        WhmcsException: If an error occurs.
+    """
+    parameters = prepare_cancel_order_request(order_id, cancel_subscription, no_email)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful:
+        return is_successful
+    default_error = "Unable to cancel the order"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
