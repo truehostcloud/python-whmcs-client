@@ -13,7 +13,8 @@ from olittwhmcs.serializer import get_product_request_parameters, \
     order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
     upgrade_product_request_parameters, prepare_get_invoices_request, \
-    prepare_get_orders_request, prepare_cancel_order_request
+    prepare_get_orders_request, prepare_cancel_order_request, \
+    order_domain_request_parameters
 
 
 ##########
@@ -123,11 +124,13 @@ def get_client_products(client_id, product_id=None, service_id=None, domain=None
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs):
+def order_product(client_id, payment_method, billing_cycle, product_id=None,
+                  domain=None, **kwargs):
     """
     Place a product order in WHMCS.
     :param client_id: Integer, id of the client placing the order.
     :param product_id: Integer, id of the product to order.
+    :param domain: Integer, domain name to order.
     :param payment_method: String, preferred method of paying for the order.
         Eg, paypal, rave, ...
     :param billing_cycle: String, billing cycle. Eg, monthly, annually
@@ -137,8 +140,13 @@ def order_product(client_id, product_id, payment_method, billing_cycle, **kwargs
     :rtype: int, int
     :raises WhmcsException: If an error occurs.
     """
-    parameters = order_product_request_parameters(client_id, product_id, payment_method,
-                                                  billing_cycle, **kwargs)
+    if product_id:
+        parameters = order_product_request_parameters(client_id, product_id,
+                                                      payment_method, billing_cycle,
+                                                      **kwargs)
+    else:
+        parameters = order_domain_request_parameters(client_id, domain, payment_method,
+                                                     billing_cycle, **kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         order_id = response_or_error.get('orderid')

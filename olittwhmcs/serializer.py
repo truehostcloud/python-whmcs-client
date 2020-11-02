@@ -147,6 +147,29 @@ def order_product_request_parameters(client_id, product_id, payment_method,
     return parameters
 
 
+def order_domain_request_parameters(client_id, domain, payment_method,
+                                    billing_cycle, **kwargs):
+    """
+    Retrieve parameters for the domain order request.
+    :param client_id: Integer, id of the client placing the order.
+    :param domain: str, Domain name to order.
+    :param payment_method: String, preferred method of paying for the order.
+        Eg, paypal, rave, ...
+    :param billing_cycle: String, billing cycle. Eg, monthly, annually
+    :param kwargs: (Optional) Other parameters to add to the order payload.
+        Eg promo_code, affiliate_id, price (override), ...
+    :return: payload for the order product request
+    :rtype: Dictionary
+    """
+    parameters = order_request_parameters(client_id, payment_method, billing_cycle,
+                                          **kwargs)
+    parameters.update({
+        'domain': domain,
+        'domaintype': 'register'
+    })
+    return parameters
+
+
 def upgrade_product_request_parameters(service_id, payment_method, billing_cycle=None,
                                        package_id=None):
     """Retrieve parameters for the product upgrade request.
