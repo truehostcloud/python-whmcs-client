@@ -118,6 +118,7 @@ def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs)
         'billingcycle': billing_cycle
     })
     for param, value in kwargs.items():
+        parameters.update({param: value})
         if param == 'price':
             parameters.update({'priceoverride': value})
         if param == 'promo_code':
