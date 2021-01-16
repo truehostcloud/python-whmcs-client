@@ -64,6 +64,33 @@ def get_client_request_parameters(email=None, client_id=None):
     return parameters
 
 
+def update_client_request_parameters(**kwargs):
+    parameters = get_default_parameters()
+    parameters.update({'action': 'UpdateClient'})
+    for param, value in kwargs.items():
+        if param == 'first_name':
+            parameters.update({'firstname': value})
+        if param == 'last_name':
+            parameters.update({'lastname': value})
+        if param == 'email':
+            parameters.update({'email': value})
+        if param == 'country':
+            parameters.update({'country': value})
+        if param == 'state':
+            parameters.update({'state': value})
+        if param == 'city':
+            parameters.update({'city': value})
+        if param == 'postcode':
+            parameters.update({'postcode': value})
+        if param == 'address':
+            parameters.update({'address1': value})
+        if param == 'phone':
+            parameters.update({'phonenumber': value})
+        if param == 'password':
+            parameters.update({'password2': value})
+    return parameters
+
+
 def get_product_request_parameters(group_id=None, module=None, product_ids=None):
     """
     Retrieve parameters for the products request.
