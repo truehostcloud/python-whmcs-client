@@ -63,6 +63,7 @@ def get_client_request_parameters(email=None, client_id=None):
         parameters.update({'clientid': client_id})
     return parameters
 
+
 def update_client_request_parameters(**kwargs):
     parameters = get_default_parameters()
     parameters.update({'action': 'UpdateClient'})
