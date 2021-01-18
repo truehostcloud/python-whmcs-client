@@ -63,31 +63,14 @@ def get_client_request_parameters(email=None, client_id=None):
         parameters.update({'clientid': client_id})
     return parameters
 
-
 def update_client_request_parameters(**kwargs):
     parameters = get_default_parameters()
     parameters.update({'action': 'UpdateClient'})
+    param_map = {'first_name': 'first_name', 'last_name': 'last_name', 'email': 'email', 'country': 'country',
+                 'state': 'state', 'city': 'city', 'postcode': 'postcode', 'address': 'address', 'phone': 'phone',
+                 'password': 'password2'}
     for param, value in kwargs.items():
-        if param == 'first_name':
-            parameters.update({'firstname': value})
-        if param == 'last_name':
-            parameters.update({'lastname': value})
-        if param == 'email':
-            parameters.update({'email': value})
-        if param == 'country':
-            parameters.update({'country': value})
-        if param == 'state':
-            parameters.update({'state': value})
-        if param == 'city':
-            parameters.update({'city': value})
-        if param == 'postcode':
-            parameters.update({'postcode': value})
-        if param == 'address':
-            parameters.update({'address1': value})
-        if param == 'phone':
-            parameters.update({'phonenumber': value})
-        if param == 'password':
-            parameters.update({'password2': value})
+        parameters.update({param_map[param]: value})
     return parameters
 
 
