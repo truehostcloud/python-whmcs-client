@@ -1,0 +1,9 @@
+.idea
+venv
+build
+dist
+.pytest_cache
+tests/__pycache__
+olittwhmcs/__pycache__
+olittwhmcs.egg-info
+.eggs
