@@ -62,6 +62,25 @@ def get_client(email=None, client_id=None):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
+def update_client(**kwargs):
+    """Update a WHMCS User account.
+       Args:
+        kwargs: Keyword arguments with user details.
+            first_name, last_name, email, country, state, city, postcode, address,
+            phone, password
+        Returns:
+            list: products retrieved from whmcs
+        Raises:
+            WhmcsException: If an error occurs.
+    """
+    parameters = serializer.update_client_request_parameters(**kwargs)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        client_id = response_or_error.get('clientid')
+        return client_id
+    default_error = "Unable to update client details"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
 ###########
 # PRODUCT #
 ###########

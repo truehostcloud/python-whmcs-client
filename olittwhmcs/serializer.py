@@ -64,6 +64,23 @@ def get_client_request_parameters(email=None, client_id=None):
     return parameters
 
 
+def update_client_request_parameters(**kwargs):
+    """
+    Prepare parameters for the update client request.
+    :param kwargs: Keyword arguments with user details.
+    :return: payload for the update client request
+    :rtype: Dictionary
+    """
+    parameters = get_default_parameters()
+    parameters.update({'action': 'UpdateClient'})
+    param_map = {'first_name': 'first_name', 'last_name': 'last_name', 'email': 'clientemail', 'country': 'country',
+                 'state': 'state', 'city': 'city', 'postcode': 'postcode', 'address': 'address', 'phone': 'phone',
+                 'password': 'password2'}
+    for param, value in kwargs.items():
+        parameters.update({param_map[param]: value})
+    return parameters
+
+
 def get_product_request_parameters(group_id=None, module=None, product_ids=None):
     """
     Retrieve parameters for the products request.
