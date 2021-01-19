@@ -73,8 +73,8 @@ def update_client_request_parameters(**kwargs):
     """
     parameters = get_default_parameters()
     parameters.update({'action': 'UpdateClient'})
-    param_map = {'first_name': 'first_name', 'last_name': 'last_name', 'email': 'clientemail', 'country': 'country',
-                 'state': 'state', 'city': 'city', 'postcode': 'postcode', 'address': 'address', 'phone': 'phone',
+    param_map = {'first_name': 'firstname', 'last_name': 'lastname', 'email': 'clientemail', 'country': 'country',
+                 'state': 'state', 'city': 'city', 'postcode': 'postcode', 'address': 'address1', 'phone': 'phonenumber',
                  'password': 'password2'}
     for param, value in kwargs.items():
         parameters.update({param_map[param]: value})
