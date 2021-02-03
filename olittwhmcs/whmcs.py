@@ -187,6 +187,8 @@ def order_bulk_products(parameters=None, **kwargs):
     :rtype: int, int
     :raises WhmcsException: If an error occurs.
     """
+    if not parameters:
+        parameters = {}
     updated_parameters = order_bulk_products_request_parameters(parameters)
     is_successful, response_or_error = get_whmcs_response(updated_parameters)
     if is_successful and response_or_error:

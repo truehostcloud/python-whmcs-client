@@ -73,10 +73,17 @@ def update_client_request_parameters(**kwargs):
     """
     parameters = get_default_parameters()
     parameters.update({'action': 'UpdateClient'})
-    param_map = {'first_name': 'firstname', 'last_name': 'lastname', 'email': 'clientemail', 'country': 'country',
-                 'state': 'state', 'city': 'city', 'postcode': 'postcode', 'address': 'address1',
-                 'phone': 'phonenumber',
-                 'password': 'password2'}
+    param_map = {
+        'first_name': 'firstname',
+        'last_name': 'lastname',
+        'email': 'clientemail',
+        'country': 'country',
+        'state': 'state',
+        'city': 'city',
+        'postcode': 'postcode',
+        'address': 'address1',
+        'phone': 'phonenumber',
+        'password': 'password2'}
     for param, value in kwargs.items():
         parameters.update({param_map[param]: value})
     return parameters
@@ -198,9 +205,9 @@ def order_bulk_products_request_parameters(parameters, **kwargs):
     :return: payload for the order product request
     :rtype: Dictionary
     """
-    updated_parameters = get_default_parameters()
-    updated_parameters.update(parameters)
-    return updated_parameters
+    default_parameters  = get_default_parameters()
+    parameters.update(default_parameters )
+    return parameters
 
 
 def upgrade_product_request_parameters(service_id, payment_method, billing_cycle=None,
