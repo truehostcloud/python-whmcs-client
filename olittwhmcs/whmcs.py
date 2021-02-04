@@ -1,9 +1,9 @@
 """This module contains the api surface for consuming this package."""
 
+from datetime import datetime
 import hashlib
 import os
 import time
-from datetime import datetime
 
 from olittwhmcs import serializer, models
 from olittwhmcs.exceptions import WhmcsException
@@ -14,7 +14,7 @@ from olittwhmcs.serializer import get_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
     upgrade_product_request_parameters, prepare_get_invoices_request, \
     prepare_get_orders_request, prepare_cancel_order_request, \
-    order_domain_request_parameters
+    order_domain_request_parameters, order_bulk_products_request_parameters
 
 
 ##########
@@ -80,6 +80,7 @@ def update_client(**kwargs):
         return client_id
     default_error = "Unable to update client details"
     raise WhmcsException(response_or_error if response_or_error else default_error)
+
 
 ###########
 # PRODUCT #
@@ -167,6 +168,29 @@ def order_product(client_id, payment_method, billing_cycle, product_id=None,
         parameters = order_domain_request_parameters(client_id, domain, payment_method,
                                                      billing_cycle, **kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        order_id = response_or_error.get('orderid')
+        invoice_id = response_or_error.get('invoiceid')
+        return order_id, invoice_id
+    default_error = "Unable to fetch products"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def order_bulk_products(parameters=None, **kwargs):
+    """
+    Place a multiple products order in WHMCS.
+    :param parameters: dict of the order placed.
+    :param product_id: Integer, id of the product to order.
+    :param kwargs: (Optional) Other parameters to add to the order payload.
+        Eg promo_code, affiliate_id, price (override), ...
+    :return: id of placed order, id of corresponding invoice
+    :rtype: int, int
+    :raises WhmcsException: If an error occurs.
+    """
+    if not parameters:
+        parameters = {}
+    updated_parameters = order_bulk_products_request_parameters(parameters)
+    is_successful, response_or_error = get_whmcs_response(updated_parameters)
     if is_successful and response_or_error:
         order_id = response_or_error.get('orderid')
         invoice_id = response_or_error.get('invoiceid')
