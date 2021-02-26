@@ -14,7 +14,8 @@ from olittwhmcs.serializer import get_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
     upgrade_product_request_parameters, prepare_get_invoices_request, \
     prepare_get_orders_request, prepare_cancel_order_request, \
-    order_domain_request_parameters, order_bulk_products_request_parameters
+    order_domain_request_parameters, order_bulk_products_request_parameters, get_domain_nameservers_request_parameter, \
+    update_domain_nameservers_request_parameter
 
 
 ##########
@@ -196,6 +197,42 @@ def order_bulk_products(parameters=None, **kwargs):
         invoice_id = response_or_error.get('invoiceid')
         return order_id, invoice_id
     default_error = "Unable to fetch products"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def get_domain_nameservers(domain_id):
+    """get  domain nameservers.
+
+       Args:
+           domain_id (int): The Id of the domain.
+       Returns:
+           dict: the nameservers of the domain
+       Raises:
+           WhmcsException: If an error occurs.
+   """
+    parameters = get_domain_nameservers_request_parameter(domain_id)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return response_or_error
+    default_error = "Unable to get nameservers"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+def update_domain_nameservers(data):
+    """update a domain nameservers.
+
+        Args:
+            data (dict): data containing the nameservers and domain id.
+        Returns:
+            dict: the results of the update of nameserver
+        Raises:
+            WhmcsException: If an error occurs.
+    """
+    parameters = update_domain_nameservers_request_parameter(data)
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful and response_or_error:
+        return response_or_error
+    default_error = "Unable to update nameservers"
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
