@@ -198,16 +198,55 @@ def order_domain_request_parameters(client_id, domain, payment_method,
 
 def order_bulk_products_request_parameters(parameters, **kwargs):
     """
-    Retrieve parameters for the domain order request.
-    :param parameters: dict of the order placed.
-    :param kwargs: (Optional) Other parameters to add to the order payload.
-        Eg promo_code, affiliate_id, price (override), ...
-    :return: payload for the order product request
-    :rtype: Dictionary
+        Retrieve parameters for the domain order request.
+        :param parameters: dict of the order placed.
+        :param kwargs: (Optional) Other parameters to add to the order payload.
+            Eg promo_code, affiliate_id, price (override), ...
+        :return: payload for the order product request
+        :rtype: Dictionary
     """
-    default_parameters  = get_default_parameters()
-    parameters.update(default_parameters )
+    default_parameters = get_default_parameters()
+    parameters.update(default_parameters)
     return parameters
+
+
+def get_domain_nameservers_request_parameter(domain_id):
+    """
+       Retrieve parameters for geting domain nameservers request.
+       :param domain_id: ID of the domain.
+       :return: payload for geting domain nameservers request
+       :rtype: Dictionary
+    """
+    parameters = get_default_parameters()
+    parameters.update({
+        'action': 'DomainGetNameservers',
+        'domainid': str(domain_id)
+    })
+    return parameters
+
+
+def update_domain_nameservers_request_parameter(parameters):
+    """
+      Retrieve parameters for updating domain nameservers.
+      :param parameters: Dict of the domain nameservers.
+      :return: payload for updating domain nameservers request
+      :rtype: Dictionary
+    """
+    updated_parameters = get_default_parameters()
+    updated_parameters.update({
+        'action': 'DomainUpdateNameservers',
+    })
+    param_map = {
+        "nameserver1": "ns1",
+        "nameserver2": "ns2",
+        "nameserver3": "ns3",
+        "nameserver4": "ns4",
+        "nameserver5": "ns5",
+        "domainid": "domainid",
+    }
+    for param, value in parameters.items():
+        updated_parameters.update({param_map[param]: value})
+    return updated_parameters
 
 
 def upgrade_product_request_parameters(service_id, payment_method, billing_cycle=None,
