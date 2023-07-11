@@ -4,6 +4,7 @@ from datetime import datetime
 import hashlib
 import os
 import time
+from datetime import datetime
 
 from olittwhmcs import serializer, models
 from olittwhmcs.exceptions import WhmcsException
@@ -360,6 +361,17 @@ def get_client_invoices_sso_url(client_id: int):
     return get_sso_token_and_redirect_url(client_id, "clientarea:invoices")
 
 
+def get_client_invoice_sso_url(client_id: int, invoice_id: int):
+    """
+    Get or generate a url to view a client's invoices.
+    """
+    return get_sso_token_and_redirect_url(
+        client_id,
+        "sso:custom_redirect",
+        {"sso_redirect_path": f"/viewinvoice.php?id={invoice_id}"},
+    )
+
+
 def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
     """
     Generate a url to preview and pay for the invoice.
@@ -433,13 +445,20 @@ def get_invoices(client_id=None, status=None, order_by=None, order=None):
 SIXTY_SECONDS = 60
 
 
-def get_sso_token_and_redirect_url(client_id: int, destination: str = ""):
+def get_sso_token_and_redirect_url(
+    client_id: int, destination: str = "", extra_paramaters: Dict = None
+):
     """
     Generate Single Sign On access token and redirect url.
 
     Args:
         client_id (int): ID of client to generate token for.
+        destination (str): (Optional) Destination to redirect to after login.
+        extra_paramaters (dict): (Optional) Extra parameters to pass to WHMCS.
     """
+
+    if not extra_paramaters:
+        extra_paramaters = {}
 
     access_token_key = f"whmcs_sso_token_{client_id}_{destination}"
     existing_access_token = cache.get(access_token_key)
@@ -460,6 +479,7 @@ def get_sso_token_and_redirect_url(client_id: int, destination: str = ""):
         "action": "CreateSsoToken",
         "client_id": client_id,
         "destination": destination,
+        **extra_paramaters,
     }
 
     is_successful, response_or_error = get_whmcs_response(parameters)
