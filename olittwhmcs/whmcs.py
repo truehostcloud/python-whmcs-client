@@ -352,6 +352,14 @@ def cancel_order(order_id, cancel_subscription=None, no_email=None):
 # INVOICE #
 ###########
 
+
+def get_client_invoices_sso_url(client_id: int):
+    """
+    Get or generate a url to view a client's invoices.
+    """
+    return get_sso_token_and_redirect_url(client_id, "clientarea:invoices")
+
+
 def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
     """
     Generate a url to preview and pay for the invoice.
@@ -416,3 +424,52 @@ def get_invoices(client_id=None, status=None, order_by=None, order=None):
         return invoices
     default_error = "Unable to fetch invoices"
     raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
+###########
+# AUTH #
+###########
+
+SIXTY_SECONDS = 60
+
+
+def get_sso_token_and_redirect_url(client_id: int, destination: str = ""):
+    """
+    Generate Single Sign On access token and redirect url.
+
+    Args:
+        client_id (int): ID of client to generate token for.
+    """
+
+    access_token_key = f"whmcs_sso_token_{client_id}_{destination}"
+    existing_access_token = cache.get(access_token_key)
+
+    if existing_access_token:
+        base_url = os.environ.get(
+            "WHMCS_CLIENT_AREA_URL", "https://www.olitt.com/billing"
+        )
+        return (
+            existing_access_token,
+            f"{base_url}/oauth/singlesignon.php?access_token={existing_access_token}",
+        )
+
+    default_parameters = get_default_parameters()
+
+    parameters = {
+        **default_parameters,
+        "action": "CreateSsoToken",
+        "client_id": client_id,
+        "destination": destination,
+    }
+
+    is_successful, response_or_error = get_whmcs_response(parameters)
+
+    if not is_successful:
+        default_error = "Unable to generate SSO token"
+        raise WhmcsException(response_or_error if response_or_error else default_error)
+
+    access_token = response_or_error.get("access_token")
+    redirect_url = response_or_error.get("redirect_url")
+
+    cache.set(access_token_key, access_token, SIXTY_SECONDS)
+    return access_token, redirect_url
