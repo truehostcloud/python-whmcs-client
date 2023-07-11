@@ -1,6 +1,7 @@
 """This module contains the functions that make networks requests to whmcs."""
 
 import requests
+from django.conf import settings
 from requests.exceptions import RequestException
 
 from olittwhmcs.exceptions import WhmcsConnectionError
@@ -33,8 +34,11 @@ def make_whmcs_network_request(parameters):
     :rtype: requests.Response
     :raises WhmcsConnectionError: If the network request fails.
     """
-    # ToDo: Read this url from consumers or settings.py (or from env variables if not possible)
-    url = "https://www.olitt.com/billing/includes/api.php"
+    url = (
+        f"{settings.WHMCS_BASE_URL}/includes/api.php"
+        if settings.WHMCS_BASE_URL
+        else "https://www.olitt.com/billing/includes/api.php"
+    )
     try:
         return requests.post(url=url, data=parameters)
     except RequestException:
