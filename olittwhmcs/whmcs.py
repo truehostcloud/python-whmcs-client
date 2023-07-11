@@ -5,12 +5,14 @@ import hashlib
 import os
 import time
 from datetime import datetime
+from typing import Dict
+from django.core.cache import cache
 
 from olittwhmcs import serializer, models
 from olittwhmcs.exceptions import WhmcsException
 from olittwhmcs.models import Product, ClientProduct, Client
 from olittwhmcs.network import get_whmcs_response
-from olittwhmcs.serializer import get_product_request_parameters, \
+from olittwhmcs.serializer import get_default_parameters, get_product_request_parameters, \
     order_product_request_parameters, \
     create_user_request_parameters, get_client_product_request_parameters, \
     upgrade_product_request_parameters, prepare_get_invoices_request, \
