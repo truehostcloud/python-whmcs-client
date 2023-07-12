@@ -5,9 +5,9 @@ name: Test Coverage With Deepsource
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
@@ -16,23 +16,24 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest pytest-cov requests responses
-    - name: Generate coverage report
-      run: |
-        pytest --cov=./ --cov-report xml
-    - name: Install deepsource CLI
-      run: |
-        curl https://deepsource.io/cli | sh
-    - name: Run the report coverage
-      run: |
-        ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.xml
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov requests responses
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Generate coverage report
+        run: |
+          DJANGO_SETTINGS_MODULE=olittwhmcs.settings pytest --cov=./ --cov-report xml
+      - name: Install deepsource CLI
+        run: |
+          curl https://deepsource.io/cli | sh
+      - name: Run the report coverage
+        run: |
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.xml
     env:
       DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}

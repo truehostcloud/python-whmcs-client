@@ -1,6 +1,7 @@
 """This module contains the functions that make networks requests to whmcs."""
 
 import requests
+from django.conf import settings
 from requests.exceptions import RequestException
 
 from olittwhmcs.exceptions import WhmcsConnectionError
@@ -16,7 +17,7 @@ def get_whmcs_response(parameters):
     try:
         response = make_whmcs_network_request(parameters)
         response_data = get_response_data(response)
-        result = response_data.get('result')
+        result = response_data.get("result")
         if response.ok and result == "success":
             return True, response_data
         error = get_error_message(response_data)
@@ -33,8 +34,11 @@ def make_whmcs_network_request(parameters):
     :rtype: requests.Response
     :raises WhmcsConnectionError: If the network request fails.
     """
-    # ToDo: Read this url from consumers or settings.py (or from env variables if not possible)
-    url = "https://www.olitt.com/billing/includes/api.php"
+    url = (
+        f"{settings.WHMCS_BASE_URL}/includes/api.php"
+        if settings.WHMCS_BASE_URL
+        else "https://www.olitt.com/billing/includes/api.php"
+    )
     try:
         return requests.post(url=url, data=parameters)
     except RequestException:
@@ -57,13 +61,14 @@ def get_response_data(response):
 def get_error_message(response_data):
     """
     Extract an error message from whmcs response data.
-    :param response_data: Dictionary, data received from whmcs from which to extract the message.
+    :param response_data: Dictionary, data received from
+                            whmcs from which to extract the message.
     :return: Error message in the whmcs response data.
     :rtype: String or None
     """
     if type(response_data) is dict:
-        result = response_data.get('result', None)
-        error = response_data.get('message', None)
+        result = response_data.get("result", None)
+        error = response_data.get("message", None)
         if result == "error":
             return error
     return None
