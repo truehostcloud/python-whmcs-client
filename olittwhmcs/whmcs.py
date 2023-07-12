@@ -381,16 +381,12 @@ def cancel_order(order_id, cancel_subscription=None, no_email=None):
 
 
 def get_client_invoices_sso_url(client_id: int):
-    """
-    Get or generate a url to view a client's invoices.
-    """
+    """Get or generate a url to view a client's invoices."""
     return get_sso_token_and_redirect_url(client_id, "clientarea:invoices")
 
 
 def get_client_invoice_sso_url(client_id: int, invoice_id: int):
-    """
-    Get or generate a url to view a client's invoices.
-    """
+    """Get or generate a url to view a client's invoices."""
     return get_sso_token_and_redirect_url(
         client_id,
         "sso:custom_redirect",
