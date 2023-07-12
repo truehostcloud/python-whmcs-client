@@ -11,4 +11,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "responses"],
     test_suite="tests",
+    project_urls={
+        "Source": "https://github.com/truehostcloud/python-whmcs-client",
+    },
 )
