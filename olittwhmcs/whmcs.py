@@ -411,7 +411,7 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
         return timestamp_string
 
     def generate_whmcs_hash(email):
-        concatenated_string = "{}{}{}".format(email, get_timestamp(), auto_auth_key)
+        concatenated_string = f"{email}{get_timestamp()}{auto_auth_key}"
         hash_object = hashlib.sha1(concatenated_string.encode())
         pb_hash = hash_object.hexdigest()
         return pb_hash
@@ -420,11 +420,9 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
 
     base_url = os.environ.get("WHMCS_CLIENT_AREA_URL", "https://www.olitt.com/billing")
 
-    invoice_url = "{}{}?id={}".format(base_url, "/viewinvoice.php", invoice_id)
-    parameters = "email={}&timestamp={}&hash={}&goto={}".format(
-        client_email, get_timestamp(), whmcs_hash, invoice_url
-    )
-    payment_url = "{}{}?{}".format(base_url, "/dologin.php", parameters)
+    invoice_url = f"{base_url}/viewinvoice.php?id={invoice_id}"
+    parameters = f"email={client_email}&timestamp={get_timestamp()}&hash={whmcs_hash}&goto={invoice_url}"
+    payment_url = f"{base_url}/dologin.php?{parameters}"
     return payment_url
 
 
