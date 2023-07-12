@@ -61,7 +61,8 @@ def get_response_data(response):
 def get_error_message(response_data):
     """
     Extract an error message from whmcs response data.
-    :param response_data: Dictionary, data received from whmcs from which to extract the message.
+    :param response_data: Dictionary, data received from
+                            whmcs from which to extract the message.
     :return: Error message in the whmcs response data.
     :rtype: String or None
     """
