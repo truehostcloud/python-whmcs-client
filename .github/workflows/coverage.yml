@@ -28,7 +28,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Generate coverage report
         run: |
-          pytest --cov=./ --cov-report xml
+          DJANGO_SETTINGS_MODULE=olittwhmcs.settings pytest --cov=./ --cov-report xml
       - name: Install deepsource CLI
         run: |
           curl https://deepsource.io/cli | sh
