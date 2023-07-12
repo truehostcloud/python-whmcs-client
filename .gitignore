@@ -6,3 +6,4 @@ dist
 tests/__pycache__
 olittwhmcs/__pycache__
 olittwhmcs.egg-info
+pyproject.toml
