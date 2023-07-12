@@ -421,7 +421,10 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
     base_url = os.environ.get("WHMCS_CLIENT_AREA_URL", "https://www.olitt.com/billing")
 
     invoice_url = f"{base_url}/viewinvoice.php?id={invoice_id}"
-    parameters = f"email={client_email}&timestamp={get_timestamp()}&hash={whmcs_hash}&goto={invoice_url}"
+    parameters = (
+        f"email={client_email}&timestamp={get_timestamp()}"
+        + f"&hash={whmcs_hash}&goto={invoice_url}"
+    )
     payment_url = f"{base_url}/dologin.php?{parameters}"
     return payment_url
 
