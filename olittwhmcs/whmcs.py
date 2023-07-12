@@ -482,7 +482,6 @@ def get_sso_token_and_redirect_url(
         destination (str): (Optional) Destination to redirect to after login.
         extra_paramaters (dict): (Optional) Extra parameters to pass to WHMCS.
     """
-
     if not extra_paramaters:
         extra_paramaters = {}
 
