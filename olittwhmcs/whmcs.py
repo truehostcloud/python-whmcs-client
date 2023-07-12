@@ -1,28 +1,35 @@
 """This module contains the api surface for consuming this package."""
 
-from datetime import datetime
 import hashlib
 import os
 import time
+from datetime import datetime
 from typing import Dict
+
 from django.core.cache import cache
 
-from olittwhmcs import serializer, models
+from olittwhmcs import models, serializer
 from olittwhmcs.exceptions import WhmcsException
-from olittwhmcs.models import Product, ClientProduct, Client
+from olittwhmcs.models import Client, ClientProduct, Product
 from olittwhmcs.network import get_whmcs_response
-from olittwhmcs.serializer import get_default_parameters, get_product_request_parameters, \
-    order_product_request_parameters, \
-    create_user_request_parameters, get_client_product_request_parameters, \
-    upgrade_product_request_parameters, prepare_get_invoices_request, \
-    prepare_get_orders_request, prepare_cancel_order_request, \
-    order_domain_request_parameters, order_bulk_products_request_parameters, get_domain_nameservers_request_parameter, \
-    update_domain_nameservers_request_parameter
-
+from olittwhmcs.serializer import (create_user_request_parameters,
+                                   get_client_product_request_parameters,
+                                   get_default_parameters,
+                                   get_domain_nameservers_request_parameter,
+                                   get_product_request_parameters,
+                                   order_bulk_products_request_parameters,
+                                   order_domain_request_parameters,
+                                   order_product_request_parameters,
+                                   prepare_cancel_order_request,
+                                   prepare_get_invoices_request,
+                                   prepare_get_orders_request,
+                                   update_domain_nameservers_request_parameter,
+                                   upgrade_product_request_parameters)
 
 ##########
 # CLIENT #
 ##########
+
 
 def create_client(**kwargs):
     """Create a WHMCS User account.
@@ -39,7 +46,7 @@ def create_client(**kwargs):
     parameters = create_user_request_parameters(**kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        client_id = response_or_error.get('clientid')
+        client_id = response_or_error.get("clientid")
         return client_id
     default_error = "Unable to enroll for a billing account"
     raise WhmcsException(response_or_error if response_or_error else default_error)
@@ -67,19 +74,19 @@ def get_client(email=None, client_id=None):
 
 def update_client(**kwargs):
     """Update a WHMCS User account.
-       Args:
-        kwargs: Keyword arguments with user details.
-            first_name, last_name, email, country, state, city, postcode, address,
-            phone, password
-        Returns:
-            list: products retrieved from whmcs
-        Raises:
-            WhmcsException: If an error occurs.
+    Args:
+     kwargs: Keyword arguments with user details.
+         first_name, last_name, email, country, state, city, postcode, address,
+         phone, password
+     Returns:
+         list: products retrieved from whmcs
+     Raises:
+         WhmcsException: If an error occurs.
     """
     parameters = serializer.update_client_request_parameters(**kwargs)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        client_id = response_or_error.get('clientid')
+        client_id = response_or_error.get("clientid")
         return client_id
     default_error = "Unable to update client details"
     raise WhmcsException(response_or_error if response_or_error else default_error)
@@ -88,6 +95,7 @@ def update_client(**kwargs):
 ###########
 # PRODUCT #
 ###########
+
 
 def get_products(currency=None, group_id=None, module=None, product_ids=None):
     """Retrieve products from WHMCS.
@@ -106,8 +114,8 @@ def get_products(currency=None, group_id=None, module=None, product_ids=None):
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         try:
-            whmcs_products_wrapper = response_or_error.get('products', '')
-            whmcs_products = whmcs_products_wrapper.get('product')
+            whmcs_products_wrapper = response_or_error.get("products", "")
+            whmcs_products = whmcs_products_wrapper.get("product")
         except AttributeError:
             whmcs_products = []
 
@@ -128,13 +136,14 @@ def get_client_products(client_id, product_id=None, service_id=None, domain=None
     :param service_id: Integer, specific service id to obtain the details for.
     :param domain: String, specific domain to obtain the service details for.
     """
-    parameters = get_client_product_request_parameters(client_id, product_id,
-                                                       service_id, domain)
+    parameters = get_client_product_request_parameters(
+        client_id, product_id, service_id, domain
+    )
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful:
         try:
-            whmcs_products_wrapper = response_or_error.get('products', '')
-            whmcs_products = whmcs_products_wrapper.get('product', [])
+            whmcs_products_wrapper = response_or_error.get("products", "")
+            whmcs_products = whmcs_products_wrapper.get("product", [])
         except AttributeError:
             whmcs_products = []
 
@@ -147,8 +156,9 @@ def get_client_products(client_id, product_id=None, service_id=None, domain=None
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def order_product(client_id, payment_method, billing_cycle, product_id=None,
-                  domain=None, **kwargs):
+def order_product(
+    client_id, payment_method, billing_cycle, product_id=None, domain=None, **kwargs
+):
     """
     Place a product order in WHMCS.
     :param client_id: Integer, id of the client placing the order.
@@ -164,16 +174,17 @@ def order_product(client_id, payment_method, billing_cycle, product_id=None,
     :raises WhmcsException: If an error occurs.
     """
     if product_id:
-        parameters = order_product_request_parameters(client_id, product_id,
-                                                      payment_method, billing_cycle,
-                                                      **kwargs)
+        parameters = order_product_request_parameters(
+            client_id, product_id, payment_method, billing_cycle, **kwargs
+        )
     else:
-        parameters = order_domain_request_parameters(client_id, domain, payment_method,
-                                                     billing_cycle, **kwargs)
+        parameters = order_domain_request_parameters(
+            client_id, domain, payment_method, billing_cycle, **kwargs
+        )
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        order_id = response_or_error.get('orderid')
-        invoice_id = response_or_error.get('invoiceid')
+        order_id = response_or_error.get("orderid")
+        invoice_id = response_or_error.get("invoiceid")
         return order_id, invoice_id
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
@@ -195,8 +206,8 @@ def order_bulk_products(parameters=None, **kwargs):
     updated_parameters = order_bulk_products_request_parameters(parameters)
     is_successful, response_or_error = get_whmcs_response(updated_parameters)
     if is_successful and response_or_error:
-        order_id = response_or_error.get('orderid')
-        invoice_id = response_or_error.get('invoiceid')
+        order_id = response_or_error.get("orderid")
+        invoice_id = response_or_error.get("invoiceid")
         return order_id, invoice_id
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
@@ -205,13 +216,13 @@ def order_bulk_products(parameters=None, **kwargs):
 def get_domain_nameservers(domain_id):
     """get  domain nameservers.
 
-       Args:
-           domain_id (int): The Id of the domain.
-       Returns:
-           dict: the nameservers of the domain
-       Raises:
-           WhmcsException: If an error occurs.
-   """
+    Args:
+        domain_id (int): The Id of the domain.
+    Returns:
+        dict: the nameservers of the domain
+    Raises:
+        WhmcsException: If an error occurs.
+    """
     parameters = get_domain_nameservers_request_parameter(domain_id)
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
@@ -223,12 +234,12 @@ def get_domain_nameservers(domain_id):
 def update_domain_nameservers(data):
     """update a domain nameservers.
 
-        Args:
-            data (dict): data containing the nameservers and domain id.
-        Returns:
-            dict: the results of the update of nameserver
-        Raises:
-            WhmcsException: If an error occurs.
+    Args:
+        data (dict): data containing the nameservers and domain id.
+    Returns:
+        dict: the results of the update of nameserver
+    Raises:
+        WhmcsException: If an error occurs.
     """
     parameters = update_domain_nameservers_request_parameter(data)
     is_successful, response_or_error = get_whmcs_response(parameters)
@@ -238,8 +249,9 @@ def update_domain_nameservers(data):
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
-def upgrade_client_product(service_id, payment_method, billing_cycle=None,
-                           package_id=None):
+def upgrade_client_product(
+    service_id, payment_method, billing_cycle=None, package_id=None
+):
     """Upgrade a product in WHMCS.
 
     Args:
@@ -253,11 +265,12 @@ def upgrade_client_product(service_id, payment_method, billing_cycle=None,
     Raises:
         WhmcsException: If an error occurs.
     """
-    parameters = upgrade_product_request_parameters(service_id, payment_method,
-                                                    billing_cycle, package_id)
+    parameters = upgrade_product_request_parameters(
+        service_id, payment_method, billing_cycle, package_id
+    )
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
-        service_id = response_or_error.get('serviceid')
+        service_id = response_or_error.get("serviceid")
         return service_id
     default_error = "Unable to fetch products"
     raise WhmcsException(response_or_error if response_or_error else default_error)
@@ -267,8 +280,15 @@ def upgrade_client_product(service_id, payment_method, billing_cycle=None,
 # SERVICE #
 ###########
 
-def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=None,
-                    new_billing_cycle=None, promo_code=None):
+
+def upgrade_product(
+    service_id,
+    payment_method,
+    upgrade_type,
+    new_product_id=None,
+    new_billing_cycle=None,
+    promo_code=None,
+):
     """Upgrade, or calculate an upgrade on, a product.
 
     Args:
@@ -283,10 +303,14 @@ def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=Non
     Raises:
         WhmcsException: If an error occurs.
     """
-    parameters = serializer.get_upgrade_product_parameters(service_id, payment_method,
-                                                           upgrade_type, new_product_id,
-                                                           new_billing_cycle,
-                                                           promo_code)
+    parameters = serializer.get_upgrade_product_parameters(
+        service_id,
+        payment_method,
+        upgrade_type,
+        new_product_id,
+        new_billing_cycle,
+        promo_code,
+    )
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         return models.ProductUpgrade(response_or_error)
@@ -297,6 +321,7 @@ def upgrade_product(service_id, payment_method, upgrade_type, new_product_id=Non
 #########
 # ORDER #
 #########
+
 
 def get_orders(client_id=None, order_id=None, status=None):
     """Retrieve a WHMCS orders.
@@ -314,8 +339,8 @@ def get_orders(client_id=None, order_id=None, status=None):
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         try:
-            whmcs_orders_wrapper = response_or_error.get('orders')
-            whmcs_orders = whmcs_orders_wrapper.get('order')
+            whmcs_orders_wrapper = response_or_error.get("orders")
+            whmcs_orders = whmcs_orders_wrapper.get("order")
         except AttributeError:
             whmcs_orders = []
 
@@ -390,20 +415,20 @@ def get_settle_invoice_url(invoice_id, client_email, auto_auth_key):
         return timestamp_string
 
     def generate_whmcs_hash(email):
-        concatenated_string = '{}{}{}'.format(email, get_timestamp(), auto_auth_key)
+        concatenated_string = "{}{}{}".format(email, get_timestamp(), auto_auth_key)
         hash_object = hashlib.sha1(concatenated_string.encode())
         pb_hash = hash_object.hexdigest()
         return pb_hash
 
     whmcs_hash = generate_whmcs_hash(client_email)
 
-    base_url = os.environ.get('WHMCS_CLIENT_AREA_URL', 'https://www.olitt.com/billing')
+    base_url = os.environ.get("WHMCS_CLIENT_AREA_URL", "https://www.olitt.com/billing")
 
-    invoice_url = '{}{}?id={}'.format(base_url, '/viewinvoice.php', invoice_id)
-    parameters = 'email={}&timestamp={}&hash={}&goto={}'.format(client_email,
-                                                                get_timestamp(),
-                                                                whmcs_hash, invoice_url)
-    payment_url = '{}{}?{}'.format(base_url, '/dologin.php', parameters)
+    invoice_url = "{}{}?id={}".format(base_url, "/viewinvoice.php", invoice_id)
+    parameters = "email={}&timestamp={}&hash={}&goto={}".format(
+        client_email, get_timestamp(), whmcs_hash, invoice_url
+    )
+    payment_url = "{}{}?{}".format(base_url, "/dologin.php", parameters)
     return payment_url
 
 
@@ -425,8 +450,8 @@ def get_invoices(client_id=None, status=None, order_by=None, order=None):
     is_successful, response_or_error = get_whmcs_response(parameters)
     if is_successful and response_or_error:
         try:
-            whmcs_invoices_wrapper = response_or_error.get('invoices')
-            whmcs_invoices = whmcs_invoices_wrapper.get('invoice')
+            whmcs_invoices_wrapper = response_or_error.get("invoices")
+            whmcs_invoices = whmcs_invoices_wrapper.get("invoice")
         except AttributeError:
             whmcs_invoices = []
 

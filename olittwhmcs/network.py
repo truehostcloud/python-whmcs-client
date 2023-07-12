@@ -17,7 +17,7 @@ def get_whmcs_response(parameters):
     try:
         response = make_whmcs_network_request(parameters)
         response_data = get_response_data(response)
-        result = response_data.get('result')
+        result = response_data.get("result")
         if response.ok and result == "success":
             return True, response_data
         error = get_error_message(response_data)
@@ -66,8 +66,8 @@ def get_error_message(response_data):
     :rtype: String or None
     """
     if type(response_data) is dict:
-        result = response_data.get('result', None)
-        error = response_data.get('message', None)
+        result = response_data.get("result", None)
+        error = response_data.get("message", None)
         if result == "error":
             return error
     return None
