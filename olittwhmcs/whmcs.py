@@ -41,7 +41,7 @@ def create_client(**kwargs):
             first_name, last_name, email, country, state, city, postcode, address,
             phone, password
     Returns:
-        list: products retrieved from whmcs
+        int: The id of the created client
     Raises:
         WhmcsException: If an error occurs.
     """
