@@ -320,6 +320,30 @@ def upgrade_product(
     raise WhmcsException(response_or_error if response_or_error else default_error)
 
 
+def add_invoice_payment(invoice_id, transaction_id, amount, date, gateway):
+    """Add a payment to an invoice.
+
+    Args:
+        invoice_id (int): ID of the invoice to add the payment to.
+        transaction_id (str): Transaction ID of the payment.
+        amount (float): Amount of the payment.
+        date (str): Date of the payment in YYYY-MM-DD HH:mm:ss format.
+        gateway (str): Gateway used for the payment.
+    Returns:
+        bool: True if payment was added, False otherwise.
+    Raises:
+        WhmcsException: If an error occurs.
+    """
+    parameters = serializer.get_add_invoice_payment_parameters(
+        invoice_id, transaction_id, amount, date, gateway
+    )
+    is_successful, response_or_error = get_whmcs_response(parameters)
+    if is_successful:
+        return is_successful
+    default_error = "Unable to add payment"
+    raise WhmcsException(response_or_error if response_or_error else default_error)
+
+
 #########
 # ORDER #
 #########

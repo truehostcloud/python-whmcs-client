@@ -6,10 +6,10 @@ import os
 def get_default_parameters():
     """Retrieve parameters required for all whmcs requests."""
     return {
-        'identifier': os.environ.get('WHMCS_IDENTIFIER_KEY', ''),
-        'secret': os.environ.get('WHMCS_SECRET_KEY', ''),
-        'accesskey': os.environ.get('WHMCS_ACCESS_KEY', ''),
-        'responsetype': 'json'
+        "identifier": os.environ.get("WHMCS_IDENTIFIER_KEY", ""),
+        "secret": os.environ.get("WHMCS_SECRET_KEY", ""),
+        "accesskey": os.environ.get("WHMCS_ACCESS_KEY", ""),
+        "responsetype": "json",
     }
 
 
@@ -21,28 +21,28 @@ def create_user_request_parameters(**kwargs):
     :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({'action': 'AddClient'})
+    parameters.update({"action": "AddClient"})
     for param, value in kwargs.items():
-        if param == 'first_name':
-            parameters.update({'firstname': value})
-        if param == 'last_name':
-            parameters.update({'lastname': value})
-        if param == 'email':
-            parameters.update({'email': value})
-        if param == 'country':
-            parameters.update({'country': value})
-        if param == 'state':
-            parameters.update({'state': value})
-        if param == 'city':
-            parameters.update({'city': value})
-        if param == 'postcode':
-            parameters.update({'postcode': value})
-        if param == 'address':
-            parameters.update({'address1': value})
-        if param == 'phone':
-            parameters.update({'phonenumber': value})
-        if param == 'password':
-            parameters.update({'password2': value})
+        if param == "first_name":
+            parameters.update({"firstname": value})
+        if param == "last_name":
+            parameters.update({"lastname": value})
+        if param == "email":
+            parameters.update({"email": value})
+        if param == "country":
+            parameters.update({"country": value})
+        if param == "state":
+            parameters.update({"state": value})
+        if param == "city":
+            parameters.update({"city": value})
+        if param == "postcode":
+            parameters.update({"postcode": value})
+        if param == "address":
+            parameters.update({"address1": value})
+        if param == "phone":
+            parameters.update({"phonenumber": value})
+        if param == "password":
+            parameters.update({"password2": value})
     return parameters
 
 
@@ -56,11 +56,11 @@ def get_client_request_parameters(email=None, client_id=None):
       Dictionary, parameters for the get client details request.
     """
     parameters = get_default_parameters()
-    parameters.update({'action': 'GetClientsDetails'})
+    parameters.update({"action": "GetClientsDetails"})
     if email:
-        parameters.update({'email': email})
+        parameters.update({"email": email})
     if client_id:
-        parameters.update({'clientid': client_id})
+        parameters.update({"clientid": client_id})
     return parameters
 
 
@@ -72,18 +72,19 @@ def update_client_request_parameters(**kwargs):
     :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({'action': 'UpdateClient'})
+    parameters.update({"action": "UpdateClient"})
     param_map = {
-        'first_name': 'firstname',
-        'last_name': 'lastname',
-        'email': 'clientemail',
-        'country': 'country',
-        'state': 'state',
-        'city': 'city',
-        'postcode': 'postcode',
-        'address': 'address1',
-        'phone': 'phonenumber',
-        'password': 'password2'}
+        "first_name": "firstname",
+        "last_name": "lastname",
+        "email": "clientemail",
+        "country": "country",
+        "state": "state",
+        "city": "city",
+        "postcode": "postcode",
+        "address": "address1",
+        "phone": "phonenumber",
+        "password": "password2",
+    }
     for param, value in kwargs.items():
         parameters.update({param_map[param]: value})
     return parameters
@@ -99,18 +100,19 @@ def get_product_request_parameters(group_id=None, module=None, product_ids=None)
     :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({'action': 'GetProducts'})
+    parameters.update({"action": "GetProducts"})
     if group_id:
-        parameters.update({'gid': group_id})
+        parameters.update({"gid": group_id})
     if module:
-        parameters.update({'module': module})
+        parameters.update({"module": module})
     if product_ids:
-        parameters.update({'pid': ','.join(map(str, product_ids))})
+        parameters.update({"pid": ",".join(map(str, product_ids))})
     return parameters
 
 
-def get_client_product_request_parameters(client_id, product_id=None, service_id=None,
-                                          domain=None):
+def get_client_product_request_parameters(
+    client_id, product_id=None, service_id=None, domain=None
+):
     """
     Retrieve parameters for the client products request.
     :param client_id: Integer, id of the client whose products to fetch.
@@ -121,40 +123,40 @@ def get_client_product_request_parameters(client_id, product_id=None, service_id
     :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({
-        'action': 'GetClientsProducts',
-        'clientid': str(client_id)
-    })
+    parameters.update({"action": "GetClientsProducts", "clientid": str(client_id)})
     if product_id:
-        parameters.update({'pid': product_id})
+        parameters.update({"pid": product_id})
     if service_id:
-        parameters.update({'serviceid': service_id})
+        parameters.update({"serviceid": service_id})
     if domain:
-        parameters.update({'domain': domain})
+        parameters.update({"domain": domain})
     return parameters
 
 
 def order_request_parameters(client_id, payment_method, billing_cycle, **kwargs):
     parameters = get_default_parameters()
-    parameters.update({
-        'action': 'AddOrder',
-        'clientid': str(client_id),
-        'paymentmethod': payment_method,
-        'billingcycle': billing_cycle
-    })
+    parameters.update(
+        {
+            "action": "AddOrder",
+            "clientid": str(client_id),
+            "paymentmethod": payment_method,
+            "billingcycle": billing_cycle,
+        }
+    )
     for param, value in kwargs.items():
         parameters.update({param: value})
-        if param == 'price':
-            parameters.update({'priceoverride': value})
-        if param == 'promo_code':
-            parameters.update({'promocode': value})
-        if param == 'affiliate_id':
-            parameters.update({'affid': value})
+        if param == "price":
+            parameters.update({"priceoverride": value})
+        if param == "promo_code":
+            parameters.update({"promocode": value})
+        if param == "affiliate_id":
+            parameters.update({"affid": value})
     return parameters
 
 
-def order_product_request_parameters(client_id, product_id, payment_method,
-                                     billing_cycle, **kwargs):
+def order_product_request_parameters(
+    client_id, product_id, payment_method, billing_cycle, **kwargs
+):
     """
     Retrieve parameters for the product order request.
     :param client_id: Integer, id of the client placing the order.
@@ -167,14 +169,16 @@ def order_product_request_parameters(client_id, product_id, payment_method,
     :return: payload for the order product request
     :rtype: Dictionary
     """
-    parameters = order_request_parameters(client_id, payment_method, billing_cycle,
-                                          **kwargs)
-    parameters.update({'pid': product_id})
+    parameters = order_request_parameters(
+        client_id, payment_method, billing_cycle, **kwargs
+    )
+    parameters.update({"pid": product_id})
     return parameters
 
 
-def order_domain_request_parameters(client_id, domain, payment_method,
-                                    billing_cycle, **kwargs):
+def order_domain_request_parameters(
+    client_id, domain, payment_method, billing_cycle, **kwargs
+):
     """
     Retrieve parameters for the domain order request.
     :param client_id: Integer, id of the client placing the order.
@@ -187,23 +191,21 @@ def order_domain_request_parameters(client_id, domain, payment_method,
     :return: payload for the order product request
     :rtype: Dictionary
     """
-    parameters = order_request_parameters(client_id, payment_method, billing_cycle,
-                                          **kwargs)
-    parameters.update({
-        'domain': domain,
-        'domaintype': 'register'
-    })
+    parameters = order_request_parameters(
+        client_id, payment_method, billing_cycle, **kwargs
+    )
+    parameters.update({"domain": domain, "domaintype": "register"})
     return parameters
 
 
 def order_bulk_products_request_parameters(parameters, **kwargs):
     """
-        Retrieve parameters for the domain order request.
-        :param parameters: dict of the order placed.
-        :param kwargs: (Optional) Other parameters to add to the order payload.
-            Eg promo_code, affiliate_id, price (override), ...
-        :return: payload for the order product request
-        :rtype: Dictionary
+    Retrieve parameters for the domain order request.
+    :param parameters: dict of the order placed.
+    :param kwargs: (Optional) Other parameters to add to the order payload.
+        Eg promo_code, affiliate_id, price (override), ...
+    :return: payload for the order product request
+    :rtype: Dictionary
     """
     default_parameters = get_default_parameters()
     parameters.update(default_parameters)
@@ -212,30 +214,29 @@ def order_bulk_products_request_parameters(parameters, **kwargs):
 
 def get_domain_nameservers_request_parameter(domain_id):
     """
-       Retrieve parameters for geting domain nameservers request.
-       :param domain_id: ID of the domain.
-       :return: payload for geting domain nameservers request
-       :rtype: Dictionary
+    Retrieve parameters for geting domain nameservers request.
+    :param domain_id: ID of the domain.
+    :return: payload for geting domain nameservers request
+    :rtype: Dictionary
     """
     parameters = get_default_parameters()
-    parameters.update({
-        'action': 'DomainGetNameservers',
-        'domainid': str(domain_id)
-    })
+    parameters.update({"action": "DomainGetNameservers", "domainid": str(domain_id)})
     return parameters
 
 
 def update_domain_nameservers_request_parameter(parameters):
     """
-      Retrieve parameters for updating domain nameservers.
-      :param parameters: Dict of the domain nameservers.
-      :return: payload for updating domain nameservers request
-      :rtype: Dictionary
+    Retrieve parameters for updating domain nameservers.
+    :param parameters: Dict of the domain nameservers.
+    :return: payload for updating domain nameservers request
+    :rtype: Dictionary
     """
     updated_parameters = get_default_parameters()
-    updated_parameters.update({
-        'action': 'DomainUpdateNameservers',
-    })
+    updated_parameters.update(
+        {
+            "action": "DomainUpdateNameservers",
+        }
+    )
     param_map = {
         "nameserver1": "ns1",
         "nameserver2": "ns2",
@@ -249,8 +250,9 @@ def update_domain_nameservers_request_parameter(parameters):
     return updated_parameters
 
 
-def upgrade_product_request_parameters(service_id, payment_method, billing_cycle=None,
-                                       package_id=None):
+def upgrade_product_request_parameters(
+    service_id, payment_method, billing_cycle=None, package_id=None
+):
     """Retrieve parameters for the product upgrade request.
 
     Args:
@@ -263,15 +265,17 @@ def upgrade_product_request_parameters(service_id, payment_method, billing_cycle
         Dictionary: Parameters for the upgrade product request
     """
     parameters = get_default_parameters()
-    parameters.update({
-        'action': 'UpdateClientProduct',
-        'serviceid': service_id,
-        'paymentmethod': payment_method
-    })
+    parameters.update(
+        {
+            "action": "UpdateClientProduct",
+            "serviceid": service_id,
+            "paymentmethod": payment_method,
+        }
+    )
     if billing_cycle:
-        parameters.update({'billingcycle': billing_cycle})
+        parameters.update({"billingcycle": billing_cycle})
     if package_id:
-        parameters.update({'pid': package_id})
+        parameters.update({"pid": package_id})
     return parameters
 
 
@@ -279,23 +283,31 @@ def upgrade_product_request_parameters(service_id, payment_method, billing_cycle
 # SERVICE #
 ###########
 
-def get_upgrade_product_parameters(service_id, payment_method, upgrade_type,
-                                   new_product_id=None, new_billing_cycle=None,
-                                   promo_code=None):
+
+def get_upgrade_product_parameters(
+    service_id,
+    payment_method,
+    upgrade_type,
+    new_product_id=None,
+    new_billing_cycle=None,
+    promo_code=None,
+):
     """Retrieve parameters for the upgrade product request."""
     parameters = get_default_parameters()
-    parameters.update({
-        'action': 'UpgradeProduct',
-        'serviceid': service_id,
-        'paymentmethod': payment_method,
-        'type': upgrade_type
-    })
+    parameters.update(
+        {
+            "action": "UpgradeProduct",
+            "serviceid": service_id,
+            "paymentmethod": payment_method,
+            "type": upgrade_type,
+        }
+    )
     if new_product_id:
-        parameters.update({'newproductid': new_product_id})
+        parameters.update({"newproductid": new_product_id})
     if new_billing_cycle:
-        parameters.update({'newproductbillingcycle': new_billing_cycle})
+        parameters.update({"newproductbillingcycle": new_billing_cycle})
     if promo_code:
-        parameters.update({'promocode': promo_code})
+        parameters.update({"promocode": promo_code})
     return parameters
 
 
@@ -303,29 +315,30 @@ def get_upgrade_product_parameters(service_id, payment_method, upgrade_type,
 # ORDER #
 ###########
 
+
 def prepare_get_orders_request(client_id, order_id, status):
     """Prepare parameters for the get orders request."""
     parameters = get_default_parameters()
-    parameters.update({'action': 'GetOrders'})
+    parameters.update({"action": "GetOrders"})
     if client_id:
-        parameters.update({'userid': client_id})
+        parameters.update({"userid": client_id})
     if status:
-        parameters.update({'status': status})
+        parameters.update({"status": status})
     if order_id:
-        parameters.update({'id': order_id})
+        parameters.update({"id": order_id})
     return parameters
 
 
 def prepare_cancel_order_request(order_id, cancel_subscription, no_email):
     """Prepare parameters for the cancel order request."""
     parameters = get_default_parameters()
-    parameters.update({'action': 'CancelOrder'})
+    parameters.update({"action": "CancelOrder"})
     if order_id:
-        parameters.update({'orderid': order_id})
+        parameters.update({"orderid": order_id})
     if cancel_subscription:
-        parameters.update({'cancelsub': cancel_subscription})
+        parameters.update({"cancelsub": cancel_subscription})
     if no_email:
-        parameters.update({'noemail': no_email})
+        parameters.update({"noemail": no_email})
     return parameters
 
 
@@ -333,16 +346,34 @@ def prepare_cancel_order_request(order_id, cancel_subscription, no_email):
 # INVOICE #
 ###########
 
+
 def prepare_get_invoices_request(client_id, status, order_by, order):
     """Prepare parameters for the get invoices request."""
     parameters = get_default_parameters()
-    parameters.update({'action': 'GetInvoices'})
+    parameters.update({"action": "GetInvoices"})
     if client_id:
-        parameters.update({'userid': client_id})
+        parameters.update({"userid": client_id})
     if status:
-        parameters.update({'status': status})
+        parameters.update({"status": status})
     if order_by:
-        parameters.update({'orderby': order_by})
+        parameters.update({"orderby": order_by})
     if order:
-        parameters.update({'order': order})
+        parameters.update({"order": order})
+    return parameters
+
+
+def get_add_invoice_payment_parameters(
+    invoice_id, transaction_id, amount, date, payment_method
+):
+    """Prepare parameters for the add invoice payment request."""
+    parameters = get_default_parameters()
+    parameters.update({"action": "AddInvoicePayment"})
+    if invoice_id:
+        parameters.update({"invoiceid": invoice_id})
+    if transaction_id:
+        parameters.update({"transid": transaction_id})
+    if amount:
+        parameters.update({"amount": amount})
+    if payment_method:
+        parameters.update({"gateway": payment_method})
     return parameters
